@@ -2,303 +2,353 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>IPOB Estúdio</title>
-<link rel="icon" href="logo.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
-<style>
-/* Layout: uma coluna estreita de formulário à esquerda, a lista do que vai
-   ser editado à direita; no celular, uma coisa embaixo da outra. */
-:root{
-  --fundo:#F6F7F4; --papel:#FFFFFF; --tinta:#1B2420; --tinta-fraca:#5C6862;
-  --linha:#D9DED9; --verde:#16302F; --verde-claro:#E4EFEA; --realce:#2F8F6B;
-  --erro:#B3412B; --erro-fundo:#FBE9E5;
-  --titulo:"Source Serif 4",Georgia,serif;
-  --texto:"Source Sans 3","Helvetica Neue",Arial,sans-serif;
-}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --fundo:#121917; --papel:#1A2421; --tinta:#ECF0ED; --tinta-fraca:#A3ADA7;
-  --linha:#2C3833; --verde:#8FD3B5; --verde-claro:#1F312B; --realce:#63C39A;
-  --erro:#F0907B; --erro-fundo:#3A221D; color-scheme:dark } }
-:root[data-theme="dark"]{
-  --fundo:#121917; --papel:#1A2421; --tinta:#ECF0ED; --tinta-fraca:#A3ADA7;
-  --linha:#2C3833; --verde:#8FD3B5; --verde-claro:#1F312B; --realce:#63C39A;
-  --erro:#F0907B; --erro-fundo:#3A221D; color-scheme:dark }
-
-*{box-sizing:border-box}
-body{margin:0;background:var(--fundo);color:var(--tinta);font:16px/1.45 var(--texto)}
-.pagina{max-width:1180px;margin:0 auto;padding:28px 16px 60px}
-header{display:flex;align-items:center;gap:14px;margin-bottom:22px}
-header img{width:52px;height:52px;border-radius:50%}
-header h1{font:700 26px/1.1 var(--titulo);margin:0;text-wrap:balance}
-header p{margin:2px 0 0;color:var(--tinta-fraca);font-size:14px}
-
-.colunas{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px;align-items:start}
-@media (max-width:820px){.colunas{grid-template-columns:1fr}}
-.cartao{background:var(--papel);border:1px solid var(--linha);border-radius:12px;padding:18px}
-.cartao h2{font:600 15px/1.2 var(--texto);letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-fraca);margin:0 0 14px}
-
-label{display:block;font-weight:600;font-size:13px;margin:0 0 4px}
-.campo{margin-bottom:12px}
-input,select{width:100%;font:inherit;color:inherit;background:var(--fundo);border:1px solid var(--linha);border-radius:8px;padding:9px 10px}
-input:focus,select:focus{outline:2px solid var(--realce);outline-offset:1px}
-.dica{font-size:12px;color:var(--tinta-fraca);margin-top:3px}
-.par{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.aviso{display:none;background:var(--erro-fundo);color:var(--erro);border-radius:8px;padding:9px 11px;font-size:14px;margin-bottom:12px}
-.aviso.ativo{display:block}
-
-button{font:600 15px var(--texto);border:0;border-radius:9px;padding:10px 16px;cursor:pointer}
-.primario{background:var(--verde);color:var(--papel)}
-.secundario{background:var(--verde-claro);color:var(--verde)}
-button:disabled{opacity:.5;cursor:default}
-.botoes{display:flex;flex-wrap:wrap;gap:8px}
-
-table{width:100%;border-collapse:collapse;font-size:14px}
-th{text-align:left;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--tinta-fraca);padding:6px 8px;border-bottom:1px solid var(--linha)}
-td{padding:8px;border-bottom:1px solid var(--linha);vertical-align:top}
-td.data{font-variant-numeric:tabular-nums;white-space:nowrap}
-.rolagem{overflow-x:auto}
-.grupo{display:inline-block;white-space:nowrap;font-size:11px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:var(--verde-claro);color:var(--verde)}
-.vazio{color:var(--tinta-fraca);padding:26px 8px;text-align:center}
-.tirar{background:none;color:var(--erro);padding:2px 6px;font-size:18px;line-height:1}
-.rodape{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:14px}
-.estado{font-size:14px;color:var(--tinta-fraca)}
-.estado.ok{color:var(--realce);font-weight:600}
-.estado.erro{color:var(--erro);font-weight:600}
-.conexao{margin-top:22px}.conexao summary{cursor:pointer;font-weight:600}.conexao summary span{font-weight:400;color:var(--tinta-fraca);font-size:13px;margin-left:6px}
-.limites{margin-top:22px;font-size:14px;color:var(--tinta-fraca)}
-.limites ul{margin:6px 0 0;padding-left:18px}
-</style>
+<meta name="estudio-publico" content="1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estúdio IPOB</title>
+<link rel="icon" href="assets/logo-redondo.png">
+<link rel="stylesheet" href="web/painel.css">
 </head>
 <body>
-<div class="pagina">
-  <header>
-    <img src="logo.png" alt="">
-    <div>
-      <h1>IPOB Estúdio</h1>
-      <p>Igreja Presbiteriana de Ouro Branco · cadastre os sermões e o Estúdio faz a edição</p>
-    </div>
-  </header>
 
-  <div class="colunas">
-    <form class="cartao" id="form" novalidate>
-      <h2>Novo sermão</h2>
-      <div class="aviso" id="aviso"></div>
+<header>
+  <h1>Estúdio IPOB</h1>
+  <span>edição semanal do culto e da EBD</span>
+  <div class="ambiente" id="ambiente"></div>
+</header>
+
+<main>
+  <!-- ============================ coluna da esquerda ==================== -->
+  <div>
+
+    <section class="cartao">
+      <h2><em>1</em> Qual transmissão</h2>
+
+      <div class="abas" id="abas"></div>
 
       <div class="campo">
-        <label for="link">Link do YouTube</label>
-        <input id="link" type="url" placeholder="https://www.youtube.com/watch?v=…" required>
-        <div class="dica">A transmissão inteira, do jeito que está no canal.</div>
+        <label for="url">Link da transmissão no YouTube</label>
+        <input type="text" id="url" placeholder="https://www.youtube.com/live/…"
+               autocomplete="off" spellcheck="false">
+        <p class="dica">Cole o link da live inteira. O Estúdio lê a transcrição
+          automática e procura sozinho onde a pregação começa.</p>
       </div>
-      <div class="par">
+
+      <button class="acao" id="btAnalisar">Analisar transmissão</button>
+      <div id="avisoAnalise"></div>
+
+      <details class="ajuda" id="blocoBiblioteca">
+        <summary>Ou retome um vídeo já produzido</summary>
+        <p class="dica">Para gerar Shorts de uma pregação de outra semana, sem
+          refazer o corte.</p>
+        <div id="biblioteca"></div>
+      </details>
+    </section>
+
+    <section class="cartao" id="cartaoCorte">
+      <h2><em>2</em> Onde cortar</h2>
+      <div id="resumoVideo" class="dica" style="margin-bottom:14px">
+        Cole o link acima e clique em <b>Analisar transmissão</b>. O Estúdio lê a
+        transcrição e preenche estes campos com o trecho que encontrar.
+      </div>
+      <div id="achado"></div>
+
+      <div class="linha corte">
+        <div class="campo" style="margin:0">
+          <label for="inicio">Começa em</label>
+          <input type="text" id="inicio" placeholder="hh:mm:ss">
+        </div>
+        <div class="campo" style="margin:0">
+          <label for="fim">Termina em</label>
+          <input type="text" id="fim" placeholder="hh:mm:ss">
+        </div>
+        <button class="acao leve" id="btConferir">Ouvir o trecho</button>
+        <button class="acao" id="btGravarCorte" title="Guarda este começo e fim para esta transmissão e ensina o aprendizado">Gravar corte</button>
+      </div>
+      <div id="avisoCorte"></div>
+
+      <div class="chips" id="alternativas"></div>
+      <div class="transcricao oculto" id="transcricao"></div>
+    </section>
+
+    <section class="cartao" id="cartaoVisual">
+      <h2><em>3</em> Estudo e aparência</h2>
+
+      <div class="modo-estudo" id="modoEstudo">
+        <button data-modo="existente">Estudo existente</button>
+        <button data-modo="novo">Novo estudo</button>
+      </div>
+
+      <!-- escolher um estudo que já existe: continua a sequência com o mesmo visual -->
+      <div id="painelEstudos" class="oculto">
+        <div class="lista-estudos" id="listaEstudos"></div>
+      </div>
+
+      <!-- o estudo escolhido: linha do tempo dos episódios -->
+      <div id="estudoAtual" class="oculto"></div>
+
+      <div id="aparenciaCompleta">
+      <div id="avisoSerie"></div>
+
+      <div class="linha duas" id="linhaNomeEstudo">
         <div class="campo">
-          <label for="data">Data</label>
-          <input id="data" type="date" required>
+          <label for="nomeEstudo">Nome do estudo (série)</label>
+          <input type="text" id="nomeEstudo" placeholder="Ex.: JOÃO, APOCALIPSE, A CONFISSÃO DE FÉ…"
+                 autocomplete="off">
         </div>
         <div class="campo">
-          <label for="grupo">Grupo</label>
-          <select id="grupo" required>
-            <option value="culto">Culto Noturno</option>
-            <option value="ebd">EBD</option>
+          <label for="primeiroEpisodio">Começa no episódio</label>
+          <input type="number" id="primeiroEpisodio" min="1" value="1">
+        </div>
+      </div>
+
+      <label>Layout da capa</label>
+      <div class="layouts" id="layouts"></div>
+      <div class="linha tres" id="linhaFotos" style="margin-top:14px"></div>
+      <div class="layout-descricao" id="layoutDescricao"></div>
+
+      <label style="margin-top:16px">Cores</label>
+      <div class="modelos" id="modelos"></div>
+
+      <div class="linha tres" style="margin-top:16px">
+        <div class="campo">
+          <label for="cor">Cor da série</label>
+          <input type="color" id="cor">
+        </div>
+        <div class="campo">
+          <label for="destaque">Cor de destaque</label>
+          <input type="color" id="destaque">
+        </div>
+        <div class="campo">
+          <label for="fundo">Fundo da capa</label>
+          <select id="fundo"></select>
+        </div>
+      </div>
+
+      <div class="linha tres">
+        <div class="campo">
+          <label for="tarja_fundo">Barra da tarja</label>
+          <input type="color" id="tarja_fundo">
+        </div>
+        <div class="campo">
+          <label for="tarja_altura">Altura da tarja</label>
+          <input type="range" id="tarja_altura" min="90" max="230" step="2">
+        </div>
+        <div class="campo">
+          <label for="marca">Logo sobre o vídeo</label>
+          <select id="marca">
+            <option value="sim">Mostrar no canto</option>
+            <option value="nao">Não mostrar</option>
           </select>
         </div>
       </div>
-      <div class="campo">
-        <label for="estudo">Estudo (série)</label>
-        <input id="estudo" placeholder="APOCALIPSE" required list="estudos">
-        <datalist id="estudos"></datalist>
-      </div>
-      <div class="campo">
-        <label for="tema">Tema da mensagem</label>
-        <input id="tema" placeholder="A igreja de Laodiceia" required>
-      </div>
-      <div class="campo">
-        <label for="referencia">Referência bíblica</label>
-        <input id="referencia" placeholder="Apocalipse 3:14-22">
-      </div>
-      <div class="campo">
-        <label for="pregador">Pregador</label>
-        <select id="pregador"><option value="">Padrão do grupo</option></select>
-      </div>
-      <div class="botoes">
-        <button type="submit" class="primario">Adicionar à lista</button>
-      </div>
-    </form>
 
-    <section class="cartao">
-      <h2>Para editar <span id="qtd"></span></h2>
-      <div class="rolagem">
-        <table>
-          <thead><tr><th>Data</th><th>Grupo</th><th>Estudo</th><th>Tema</th><th>Referência</th><th>Pregador</th><th></th></tr></thead>
-          <tbody id="lista"></tbody>
-        </table>
-        <div class="vazio" id="vazio">Nada na lista ainda. Preencha o formulário e adicione os sermões, um por vez.</div>
+      <div class="iniciar-estudo oculto" id="blocoSalvarVisual">
+        <button class="acao" id="btSalvarVisual">Salvar aparência no estudo</button>
+        <span class="dica" style="margin-left:10px">layout, cores, fotos e pregadores
+          passam a valer para os próximos episódios</span>
+        <div id="avisoSalvarVisual" style="margin-top:10px"></div>
       </div>
-      <div class="rodape">
-        <div class="botoes">
-          <button class="primario" id="btEnviar" disabled>Enviar para o Estúdio</button>
-          <button class="secundario" id="btCopiar" disabled>Copiar como planilha</button>
-          <button class="secundario" id="btLimpar" disabled>Limpar lista</button>
+
+      <div class="iniciar-estudo" id="blocoIniciar">
+        <button class="acao" id="btIniciarEstudo">Iniciar estudo com esta aparência</button>
+        <p class="dica">Grava série, layout, cores e pregador. Das próximas vezes é só
+          escolher o estudo em <b>Estudo existente</b>: a capa vem igual e o número
+          do episódio segue a sequência.</p>
+      </div>
+      </div><!-- /aparenciaCompleta -->
+
+      <p class="dica" style="margin-top:14px">Para ir além destas opções, edite
+        <b>estudio/artes/estilo.css</b>.</p>
+    </section>
+
+    <section class="cartao" id="cartaoDados">
+      <h2><em>4</em> O que vai na capa</h2>
+
+      <div class="linha duas">
+        <div class="campo">
+          <label for="serie">Série</label>
+          <input type="text" id="serie">
         </div>
-        <div class="estado" id="estado"></div>
+        <div class="campo">
+          <label for="episodio">Episódio / aula</label>
+          <input type="text" id="episodio">
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="tema">Tema</label>
+        <input type="text" id="tema" placeholder="É impossível fugir de Deus fora de Deus">
+      </div>
+
+      <div class="linha duas">
+        <div class="campo">
+          <label for="referencia" id="rotuloRef">Referência bíblica</label>
+          <input type="text" id="referencia" placeholder="Amós 9. 1-10">
+        </div>
+        <div class="campo">
+          <label for="data">Data do culto</label>
+          <input type="date" id="data">
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="pregador">Quem pregou</label>
+        <select id="pregador"></select>
+      </div>
+
+      <div class="campo" id="campoCapa">
+        <label>Quem aparece na capa</label>
+        <div class="escolha-pregadores" id="pregadoresCapa"></div>
       </div>
     </section>
+
+    <section class="cartao" id="cartaoProduzir">
+      <h2><em>5</em> Produzir</h2>
+      <div class="linha duas" style="align-items:stretch">
+        <div>
+          <button class="acao grande" id="btProduzir">Vídeo completo</button>
+          <p class="dica" style="margin-top:6px">Corta, monta capa e tarja, legenda, título e descrição.</p>
+        </div>
+        <div>
+          <button class="acao grande leve" id="btSoShorts">Só os Shorts</button>
+          <p class="dica" style="margin-top:6px">Sem o vídeo completo: marque os trechos no passo 6 e gere.</p>
+        </div>
+      </div>
+      <p class="dica" id="dicaProduzir"></p>
+
+      <div class="oculto" id="andamento">
+        <div class="barra"><i id="barraProgresso" style="width:0"></i></div>
+        <div class="etapa" id="etapa"></div>
+        <div class="detalhe" id="detalhe"></div>
+        <div class="registro" id="registro"></div>
+        <button class="acao leve" id="btParar" style="margin-top:10px">Parar a produção</button>
+      </div>
+
+      <div class="pronto oculto" id="pronto">
+        <h3>Vídeo pronto</h3>
+        <p id="prontoArquivo"></p>
+        <p id="prontoTitulo"></p>
+        <div class="botoes">
+          <button class="acao" id="btAbrirPasta">Abrir a pasta</button>
+          <button class="acao leve" id="btOutro">Fazer outro</button>
+        </div>
+
+        <div class="youtube" id="youtube">
+          <h4>Subir para o YouTube</h4>
+          <div id="ytEstado"></div>
+
+          <div class="oculto" id="ytPronto">
+            <div class="linha duas" style="margin-top:10px">
+              <div class="campo" style="margin:0">
+                <label for="ytPrivacidade">Como deve subir</label>
+                <select id="ytPrivacidade">
+                  <option value="unlisted">Não listado — só quem tem o link</option>
+                  <option value="private">Privado — só você</option>
+                  <option value="public">Público</option>
+                </select>
+              </div>
+              <div class="campo" style="margin:0;align-self:end">
+                <button class="acao" id="btSubir">Subir agora</button>
+              </div>
+            </div>
+            <p class="dica">Sobe o vídeo, aplica a miniatura, manda a legenda e
+              joga na playlist da série. Nada acontece até você clicar.</p>
+          </div>
+
+          <div class="oculto" id="ytAndamento">
+            <div class="barra"><i id="ytBarra" style="width:0"></i></div>
+            <div class="etapa" id="ytEtapa"></div>
+            <div class="detalhe" id="ytDetalhe"></div>
+            <div class="registro" id="ytRegistro"></div>
+          </div>
+
+          <div id="ytResultado"></div>
+        </div>
+      </div>
+
+      <div id="erroProduzir"></div>
+    </section>
+
+    <section class="cartao oculto" id="cartaoShorts">
+      <h2><em>6</em> Shorts</h2>
+      <p class="dica oculto" id="shortsSemVideo" style="margin:-8px 0 12px">
+        Vão para a pasta do episódio (série, número e tema do passo 4), mesmo sem o
+        vídeo completo. Se depois você produzir o vídeo, ele cai na mesma pasta.
+      </p>
+      <div class="aviso" style="margin:-8px 0 14px">
+        <b>Os Shorts saem da transmissão original, não do vídeo editado.</b>
+        Por isso os tempos são os da live inteira — os mesmos do passo 2 — e dá
+        para pegar qualquer momento, inclusive fora do trecho que você cortou.
+      </div>
+      <p class="dica" style="margin:0 0 14px">
+        A escolha dos trechos é sua — ferramenta de “viralidade” é treinada em
+        inglês e escolhe mal em português. Marque os momentos e o Estúdio faz o
+        resto: reenquadra em 9:16, põe a tarja e queima a fala na tela.
+      </p>
+      <p class="dica" id="fonteShorts" style="margin:-6px 0 14px"></p>
+
+      <div id="trechos"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="acao leve" id="btAddTrecho">+ Acrescentar trecho</button>
+        <button class="acao leve" id="btSugerir">Sugerir trechos</button>
+      </div>
+      <div id="sugestoes"></div>
+
+      <div class="linha quatro" style="margin-top:16px">
+        <div class="campo">
+          <label for="modoShort">Enquadramento</label>
+          <select id="modoShort">
+            <option value="pregador-cheio">Pregador — enche a tela</option>
+            <option value="pregador">Pregador — inteiro, com fundo borrado</option>
+            <option value="completo">Quadro inteiro da transmissão</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="legendarShort">Legenda na tela</label>
+          <select id="legendarShort">
+            <option value="sim">Queimar a fala no vídeo</option>
+            <option value="nao">Sem legenda</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="tarjaShort">Identificação</label>
+          <select id="tarjaShort">
+            <option value="limpa">Limpo — só a imagem e a fala</option>
+            <option value="completa">Com série, tema e logo</option>
+          </select>
+        </div>
+        <div class="campo" style="align-self:end">
+          <button class="acao" id="btShorts">Gerar os Shorts</button>
+        </div>
+      </div>
+
+      <div class="oculto" id="shortsAndamento">
+        <div class="barra"><i id="shortsBarra" style="width:0"></i></div>
+        <div class="etapa" id="shortsEtapa"></div>
+        <div class="detalhe" id="shortsDetalhe"></div>
+        <div class="registro" id="shortsRegistro"></div>
+        <button class="acao leve" id="btPararShorts" style="margin-top:10px">Parar</button>
+      </div>
+
+      <div id="shortsResultado"></div>
+    </section>
+
   </div>
 
-  <details class="cartao conexao" id="conexao">
-    <summary>Conexão com o Estúdio <span id="conexaoEstado"></span></summary>
-    <div class="campo" style="margin-top:12px">
-      <label for="endereco">Endereço do Estúdio</label>
-      <input id="endereco" placeholder="https://estudio.ipob.org.br">
-      <div class="dica">É o endereço público do painel que roda no computador da igreja. Em branco, o botão "Enviar" fica desligado e a lista pode ser copiada e mandada para o Henrique.</div>
-    </div>
-    <div class="botoes"><button class="secundario" id="btTestar">Testar conexão</button></div>
-  </details>
+  <!-- ============================= coluna da direita ==================== -->
+  <div class="previa">
+    <h3>Capa — também vira a miniatura</h3>
+    <div class="moldura"><iframe id="previaCapa"></iframe></div>
 
-  <div class="limites">
-    A edição em si acontece no computador do Estúdio: ele baixa o vídeo, acha o começo da pregação, gera capa, tarja, legenda e Shorts.
-    <ul>
-      <li>O computador do Estúdio precisa estar ligado e com o painel aberto; a fila espera até lá.</li>
-      <li>O corte do início é automático. Quando ficar em dúvida, o vídeo é marcado para alguém conferir no painel.</li>
-      <li>Cada vídeo leva uns minutos; uma lista grande é processada ao longo do dia.</li>
-    </ul>
+    <h3>Tarja — fica o vídeo inteiro</h3>
+    <div class="moldura sobre-video"><iframe id="previaTarja"></iframe></div>
+
+    <p class="dica">Para mudar cores, tamanhos ou posições, edite
+      <b>estudio/artes/estilo.css</b> e atualize esta página. A prévia usa o
+      mesmo arquivo que gera o PNG final.</p>
   </div>
-</div>
+</main>
 
-<script>
-const $ = id => document.getElementById(id);
-const CHAVE = "fila-ipob";
-let FILA = [];
-try { FILA = JSON.parse(localStorage.getItem(CHAVE) || "[]"); } catch (e) { FILA = []; }
-const GRUPOS = { culto: "Culto Noturno", ebd: "EBD" };
-let PREGADORES = { vittor: "Pr. Vittor", isaias: "Rev. Isaías Tavares", willian: "Presb. Willian Torres" };
-Object.entries(PREGADORES).forEach(([k, n]) => { const o = document.createElement("option"); o.value = k; o.textContent = n; document.getElementById("pregador").appendChild(o); });
-const CHAVE_END = "fila-ipob-endereco";
-function endereco() { try { return (localStorage.getItem(CHAVE_END) || "").replace(/\/+$/, ""); } catch (e) { return ""; } }
-
-function guardar() { try { localStorage.setItem(CHAVE, JSON.stringify(FILA)); } catch (e) {} }
-
-function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
-
-function idDoYoutube(url) {
-  const m = /(?:v=|youtu\.be\/|\/live\/|\/shorts\/)([\w-]{11})/.exec(url || "");
-  return m ? m[1] : "";
-}
-
-function dataBr(iso) { const [a, m, d] = iso.split("-"); return `${d}/${m}/${a}`; }
-
-function desenhar() {
-  const corpo = $("lista");
-  corpo.innerHTML = FILA.map((s, i) => `
-    <tr>
-      <td class="data">${dataBr(s.data)}</td>
-      <td><span class="grupo">${GRUPOS[s.grupo] || s.grupo}</span></td>
-      <td>${esc(s.estudo)}</td>
-      <td>${esc(s.tema)}</td>
-      <td>${esc(s.referencia)}</td>
-      <td>${esc(PREGADORES[s.pregador] || (s.pregador ? s.pregador : "—"))}</td>
-      <td><button class="tirar" data-i="${i}" title="Tirar da lista" aria-label="Tirar da lista">×</button></td>
-    </tr>`).join("");
-  $("vazio").style.display = FILA.length ? "none" : "block";
-  $("qtd").textContent = FILA.length ? `(${FILA.length})` : "";
-  ["btCopiar", "btLimpar"].forEach(id => $(id).disabled = !FILA.length);
-  $("btEnviar").disabled = !FILA.length || !endereco();
-  $("btEnviar").title = endereco() ? "" : "Informe o endereço do Estúdio em Conexão";
-}
-
-$("lista").addEventListener("click", e => {
-  const b = e.target.closest(".tirar");
-  if (!b) return;
-  FILA.splice(+b.dataset.i, 1); guardar(); desenhar();
-});
-
-$("form").addEventListener("submit", e => {
-  e.preventDefault();
-  const s = {
-    link: $("link").value.trim(), data: $("data").value, grupo: $("grupo").value,
-    estudo: $("estudo").value.trim().toUpperCase(), tema: $("tema").value.trim(),
-    referencia: $("referencia").value.trim(), pregador: $("pregador").value,
-  };
-  const faltas = [];
-  if (!idDoYoutube(s.link)) faltas.push("um link válido do YouTube");
-  if (!s.data) faltas.push("a data");
-  if (!s.estudo) faltas.push("o estudo");
-  if (!s.tema) faltas.push("o tema");
-  const aviso = $("aviso");
-  if (faltas.length) {
-    aviso.textContent = "Falta " + faltas.join(", ") + ".";
-    aviso.classList.add("ativo"); return;
-  }
-  if (FILA.some(x => idDoYoutube(x.link) === idDoYoutube(s.link))) {
-    aviso.textContent = "Esse vídeo já está na lista.";
-    aviso.classList.add("ativo"); return;
-  }
-  aviso.classList.remove("ativo");
-  s.video_id = idDoYoutube(s.link);
-  FILA.push(s); FILA.sort((a, b) => a.data.localeCompare(b.data));
-  guardar(); desenhar();
-  // mantém grupo, estudo e pregador: o próximo costuma ser da mesma série
-  $("link").value = ""; $("tema").value = ""; $("referencia").value = ""; $("data").value = "";
-  $("link").focus();
-});
-
-$("btLimpar").addEventListener("click", () => { FILA = []; guardar(); desenhar(); estado(""); });
-
-$("btCopiar").addEventListener("click", async () => {
-  const linhas = [["link", "data", "grupo", "estudo", "tema", "referência", "pregador"]]
-    .concat(FILA.map(s => [s.link, s.data, GRUPOS[s.grupo], s.estudo, s.tema, s.referencia, PREGADORES[s.pregador] || ""]));
-  const texto = linhas.map(l => l.join("\t")).join("\n");
-  try { await navigator.clipboard.writeText(texto); estado("Copiado. Cole no Excel ou no Google Planilhas.", "ok"); }
-  catch (e) { estado("Não deu para copiar automaticamente neste navegador.", "erro"); }
-});
-
-$("btEnviar").addEventListener("click", async () => {
-  $("btEnviar").disabled = true; estado("Enviando…");
-  try {
-    const r = await fetch(endereco() + "/api/lote", { method: "POST", headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({ sermoes: FILA }) });
-    const d = await r.json();
-    if (!r.ok) throw new Error(d.erro || r.statusText);
-    estado(`${d.recebidos} sermão(ões) na fila do Estúdio.`, "ok");
-    FILA = []; guardar(); desenhar();
-  } catch (e) {
-    estado("Não consegui falar com o Estúdio: " + e.message, "erro");
-    $("btEnviar").disabled = false;
-  }
-});
-
-function estado(msg, tipo) { const el = $("estado"); el.textContent = msg; el.className = "estado " + (tipo || ""); }
-
-$("endereco").value = endereco();
-$("endereco").addEventListener("change", () => {
-  try { localStorage.setItem(CHAVE_END, $("endereco").value.trim()); } catch (e) {}
-  desenhar(); carregarConfig();
-});
-$("btTestar").addEventListener("click", carregarConfig);
-
-/* nomes dos pregadores e estudos já existentes vêm do próprio Estúdio */
-function carregarConfig() {
-  const el = $("conexaoEstado");
-  if (!endereco()) { el.textContent = "— sem endereço"; desenhar(); return; }
-  el.textContent = "— testando…";
-  fetch(endereco() + "/api/config").then(r => r.json()).then(cfg => {
-  const sel = $("pregador");
-  Object.entries(cfg.pregadores || {}).forEach(([k, p]) => {
-    PREGADORES[k] = (p.curto || p.nome || k).replace(/\n/g, " ");
-    let o = sel.querySelector(`option[value="${k}"]`);
-    if (!o) { o = document.createElement("option"); o.value = k; sel.appendChild(o); }
-    o.textContent = PREGADORES[k];
-  });
-  const dl = $("estudos");
-  [...new Set((cfg.estudos || []).map(e => e.serie).filter(Boolean))].forEach(n => {
-    const o = document.createElement("option"); o.value = n; dl.appendChild(o);
-  });
-  el.textContent = "— conectado";
-  desenhar();
-}).catch(() => { el.textContent = "— sem resposta"; desenhar(); });
-}
-carregarConfig();
-desenhar();
-</script>
+<script src="web/painel.js"></script>
 </body>
 </html>

@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IPOB Estúdio · Fila</title>
+<link rel="icon" href="assets/logo-redondo.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: uma coluna estreita de formulário à esquerda, a lista do que vai
+   ser editado à direita; no celular, uma coisa embaixo da outra. */
+:root{
+  --fundo:#F6F7F4; --papel:#FFFFFF; --tinta:#1B2420; --tinta-fraca:#5C6862;
+  --linha:#D9DED9; --verde:#16302F; --verde-claro:#E4EFEA; --realce:#2F8F6B;
+  --erro:#B3412B; --erro-fundo:#FBE9E5;
+  --titulo:"Source Serif 4",Georgia,serif;
+  --texto:"Source Sans 3","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --fundo:#121917; --papel:#1A2421; --tinta:#ECF0ED; --tinta-fraca:#A3ADA7;
+  --linha:#2C3833; --verde:#8FD3B5; --verde-claro:#1F312B; --realce:#63C39A;
+  --erro:#F0907B; --erro-fundo:#3A221D; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --fundo:#121917; --papel:#1A2421; --tinta:#ECF0ED; --tinta-fraca:#A3ADA7;
+  --linha:#2C3833; --verde:#8FD3B5; --verde-claro:#1F312B; --realce:#63C39A;
+  --erro:#F0907B; --erro-fundo:#3A221D; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--tinta);font:16px/1.45 var(--texto)}
+.pagina{max-width:1180px;margin:0 auto;padding:28px 16px 60px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+header img{width:52px;height:52px;border-radius:50%}
+header h1{font:700 26px/1.1 var(--titulo);margin:0;text-wrap:balance}
+header p{margin:2px 0 0;color:var(--tinta-fraca);font-size:14px}
+
+.colunas{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:820px){.colunas{grid-template-columns:1fr}}
+.cartao{background:var(--papel);border:1px solid var(--linha);border-radius:12px;padding:18px}
+.cartao h2{font:600 15px/1.2 var(--texto);letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-fraca);margin:0 0 14px}
+
+label{display:block;font-weight:600;font-size:13px;margin:0 0 4px}
+.campo{margin-bottom:12px}
+input,select{width:100%;font:inherit;color:inherit;background:var(--fundo);border:1px solid var(--linha);border-radius:8px;padding:9px 10px}
+input:focus,select:focus{outline:2px solid var(--realce);outline-offset:1px}
+.dica{font-size:12px;color:var(--tinta-fraca);margin-top:3px}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.aviso{display:none;background:var(--erro-fundo);color:var(--erro);border-radius:8px;padding:9px 11px;font-size:14px;margin-bottom:12px}
+.aviso.ativo{display:block}
+
+button{font:600 15px var(--texto);border:0;border-radius:9px;padding:10px 16px;cursor:pointer}
+.primario{background:var(--verde);color:var(--papel)}
+.secundario{background:var(--verde-claro);color:var(--verde)}
+button:disabled{opacity:.5;cursor:default}
+.botoes{display:flex;flex-wrap:wrap;gap:8px}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--tinta-fraca);padding:6px 8px;border-bottom:1px solid var(--linha)}
+td{padding:8px;border-bottom:1px solid var(--linha);vertical-align:top}
+td.data{font-variant-numeric:tabular-nums;white-space:nowrap}
+.rolagem{overflow-x:auto}
+.grupo{display:inline-block;white-space:nowrap;font-size:11px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:var(--verde-claro);color:var(--verde)}
+.vazio{color:var(--tinta-fraca);padding:26px 8px;text-align:center}
+.tirar{background:none;color:var(--erro);padding:2px 6px;font-size:18px;line-height:1}
+.rodape{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:14px}
+.estado{font-size:14px;color:var(--tinta-fraca)}
+.estado.ok{color:var(--realce);font-weight:600}
+.estado.erro{color:var(--erro);font-weight:600}
+.limites{margin-top:22px;font-size:14px;color:var(--tinta-fraca)}
+.limites ul{margin:6px 0 0;padding-left:18px}
+</style>
+</head>
+<body>
+<div class="pagina">
+  <header>
+    <img src="assets/logo-redondo.png" alt="">
+    <div>
+      <h1>Fila de Sermões</h1>
+      <p>Igreja Presbiteriana de Ouro Branco · cadastre os vídeos e o Estúdio faz a edição</p>
+    </div>
+  </header>
+
+  <div class="colunas">
+    <form class="cartao" id="form" novalidate>
+      <h2>Novo sermão</h2>
+      <div class="aviso" id="aviso"></div>
+
+      <div class="campo">
+        <label for="link">Link do YouTube</label>
+        <input id="link" type="url" placeholder="https://www.youtube.com/watch?v=…" required>
+        <div class="dica">A transmissão inteira, do jeito que está no canal.</div>
+      </div>
+      <div class="par">
+        <div class="campo">
+          <label for="data">Data</label>
+          <input id="data" type="date" required>
+        </div>
+        <div class="campo">
+          <label for="grupo">Grupo</label>
+          <select id="grupo" required>
+            <option value="culto">Culto Noturno</option>
+            <option value="ebd">EBD</option>
+          </select>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="estudo">Estudo (série)</label>
+        <input id="estudo" placeholder="APOCALIPSE" required list="estudos">
+        <datalist id="estudos"></datalist>
+      </div>
+      <div class="campo">
+        <label for="tema">Tema da mensagem</label>
+        <input id="tema" placeholder="A igreja de Laodiceia" required>
+      </div>
+      <div class="campo">
+        <label for="referencia">Referência bíblica</label>
+        <input id="referencia" placeholder="Apocalipse 3:14-22">
+      </div>
+      <div class="campo">
+        <label for="pregador">Pregador</label>
+        <select id="pregador"><option value="">Padrão do grupo</option></select>
+      </div>
+      <div class="botoes">
+        <button type="submit" class="primario">Adicionar à lista</button>
+      </div>
+    </form>
+
+    <section class="cartao">
+      <h2>Para editar <span id="qtd"></span></h2>
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>Data</th><th>Grupo</th><th>Estudo</th><th>Tema</th><th>Referência</th><th>Pregador</th><th></th></tr></thead>
+          <tbody id="lista"></tbody>
+        </table>
+        <div class="vazio" id="vazio">Nada na lista ainda. Preencha o formulário e adicione os sermões, um por vez.</div>
+      </div>
+      <div class="rodape">
+        <div class="botoes">
+          <button class="primario" id="btEnviar" disabled>Enviar para o Estúdio</button>
+          <button class="secundario" id="btCopiar" disabled>Copiar como planilha</button>
+          <button class="secundario" id="btLimpar" disabled>Limpar lista</button>
+        </div>
+        <div class="estado" id="estado"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="limites">
+    A edição em si acontece no computador do Estúdio: ele baixa o vídeo, acha o começo da pregação, gera capa, tarja, legenda e Shorts.
+    <ul>
+      <li>O computador do Estúdio precisa estar ligado e com o painel aberto; a fila espera até lá.</li>
+      <li>O corte do início é automático. Quando ficar em dúvida, o vídeo é marcado para alguém conferir no painel.</li>
+      <li>Cada vídeo leva uns minutos; uma lista grande é processada ao longo do dia.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const CHAVE = "fila-ipob";
+let FILA = [];
+try { FILA = JSON.parse(localStorage.getItem(CHAVE) || "[]"); } catch (e) { FILA = []; }
+const GRUPOS = { culto: "Culto Noturno", ebd: "EBD" };
+let PREGADORES = {};
+
+function guardar() { try { localStorage.setItem(CHAVE, JSON.stringify(FILA)); } catch (e) {} }
+
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+function idDoYoutube(url) {
+  const m = /(?:v=|youtu\.be\/|\/live\/|\/shorts\/)([\w-]{11})/.exec(url || "");
+  return m ? m[1] : "";
+}
+
+function dataBr(iso) { const [a, m, d] = iso.split("-"); return `${d}/${m}/${a}`; }
+
+function desenhar() {
+  const corpo = $("lista");
+  corpo.innerHTML = FILA.map((s, i) => `
+    <tr>
+      <td class="data">${dataBr(s.data)}</td>
+      <td><span class="grupo">${GRUPOS[s.grupo] || s.grupo}</span></td>
+      <td>${esc(s.estudo)}</td>
+      <td>${esc(s.tema)}</td>
+      <td>${esc(s.referencia)}</td>
+      <td>${esc(PREGADORES[s.pregador] || (s.pregador ? s.pregador : "—"))}</td>
+      <td><button class="tirar" data-i="${i}" title="Tirar da lista" aria-label="Tirar da lista">×</button></td>
+    </tr>`).join("");
+  $("vazio").style.display = FILA.length ? "none" : "block";
+  $("qtd").textContent = FILA.length ? `(${FILA.length})` : "";
+  ["btEnviar", "btCopiar", "btLimpar"].forEach(id => $(id).disabled = !FILA.length);
+}
+
+$("lista").addEventListener("click", e => {
+  const b = e.target.closest(".tirar");
+  if (!b) return;
+  FILA.splice(+b.dataset.i, 1); guardar(); desenhar();
+});
+
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+  const s = {
+    link: $("link").value.trim(), data: $("data").value, grupo: $("grupo").value,
+    estudo: $("estudo").value.trim().toUpperCase(), tema: $("tema").value.trim(),
+    referencia: $("referencia").value.trim(), pregador: $("pregador").value,
+  };
+  const faltas = [];
+  if (!idDoYoutube(s.link)) faltas.push("um link válido do YouTube");
+  if (!s.data) faltas.push("a data");
+  if (!s.estudo) faltas.push("o estudo");
+  if (!s.tema) faltas.push("o tema");
+  const aviso = $("aviso");
+  if (faltas.length) {
+    aviso.textContent = "Falta " + faltas.join(", ") + ".";
+    aviso.classList.add("ativo"); return;
+  }
+  if (FILA.some(x => idDoYoutube(x.link) === idDoYoutube(s.link))) {
+    aviso.textContent = "Esse vídeo já está na lista.";
+    aviso.classList.add("ativo"); return;
+  }
+  aviso.classList.remove("ativo");
+  s.video_id = idDoYoutube(s.link);
+  FILA.push(s); FILA.sort((a, b) => a.data.localeCompare(b.data));
+  guardar(); desenhar();
+  // mantém grupo, estudo e pregador: o próximo costuma ser da mesma série
+  $("link").value = ""; $("tema").value = ""; $("referencia").value = ""; $("data").value = "";
+  $("link").focus();
+});
+
+$("btLimpar").addEventListener("click", () => { FILA = []; guardar(); desenhar(); estado(""); });
+
+$("btCopiar").addEventListener("click", async () => {
+  const linhas = [["link", "data", "grupo", "estudo", "tema", "referência", "pregador"]]
+    .concat(FILA.map(s => [s.link, s.data, GRUPOS[s.grupo], s.estudo, s.tema, s.referencia, PREGADORES[s.pregador] || ""]));
+  const texto = linhas.map(l => l.join("\t")).join("\n");
+  try { await navigator.clipboard.writeText(texto); estado("Copiado. Cole no Excel ou no Google Planilhas.", "ok"); }
+  catch (e) { estado("Não deu para copiar automaticamente neste navegador.", "erro"); }
+});
+
+$("btEnviar").addEventListener("click", async () => {
+  $("btEnviar").disabled = true; estado("Enviando…");
+  try {
+    const r = await fetch("/api/lote", { method: "POST", headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ sermoes: FILA }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.erro || r.statusText);
+    estado(`${d.recebidos} sermão(ões) na fila do Estúdio.`, "ok");
+    FILA = []; guardar(); desenhar();
+  } catch (e) {
+    estado("Não consegui falar com o Estúdio: " + e.message, "erro");
+    $("btEnviar").disabled = false;
+  }
+});
+
+function estado(msg, tipo) { const el = $("estado"); el.textContent = msg; el.className = "estado " + (tipo || ""); }
+
+/* nomes dos pregadores e estudos já existentes vêm do próprio Estúdio */
+fetch("/api/config").then(r => r.json()).then(cfg => {
+  const sel = $("pregador");
+  Object.entries(cfg.pregadores || {}).forEach(([k, p]) => {
+    PREGADORES[k] = (p.curto || p.nome || k).replace(/\n/g, " ");
+    const o = document.createElement("option"); o.value = k; o.textContent = PREGADORES[k]; sel.appendChild(o);
+  });
+  const dl = $("estudos");
+  [...new Set((cfg.estudos || []).map(e => e.serie).filter(Boolean))].forEach(n => {
+    const o = document.createElement("option"); o.value = n; dl.appendChild(o);
+  });
+  desenhar();
+}).catch(() => desenhar());
+</script>
+</body>
+</html>
