@@ -30,15 +30,26 @@ RAIZ = Path(__file__).resolve().parent.parent          # .../estudio
 ARTES = RAIZ / "artes"
 ASSETS = RAIZ / "assets"
 WEB = RAIZ / "web"
-DADOS = RAIZ / "dados"
-CONFIG = DADOS / "config.json"
-
 # Os vídeos ficam FORA do Google Drive de propósito: um culto de 1h40 em 1080p
 # passa de 1 GB e subiria para a nuvem a cada download. Aqui fica só local.
 # No Mac a pasta de vídeos é ~/Movies; no Windows e no Linux, ~/Videos.
 _VIDEOS = Path.home() / ("Movies" if sys.platform == "darwin" else "Videos")
 CASA = _VIDEOS / "Estudio IPOB"
 TRABALHO = CASA / "trabalho"     # downloads e transcrições (pode apagar)
+
+# Estudos, pregadores e aparência (config.json). Na cópia baixada do site a
+# pasta "dados" do programa é só um modelo (tem o arquivo .modelo): os dados
+# de verdade ficam em Vídeos/Estudio IPOB/dados, fora da pasta do programa,
+# para não se perderem quando a pessoa baixar uma versão nova.
+_MODELO = RAIZ / "dados"
+if (_MODELO / ".modelo").exists():
+    DADOS = CASA / "dados"
+    if not (DADOS / "config.json").exists():
+        DADOS.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(_MODELO / "config.json", DADOS / "config.json")
+else:
+    DADOS = _MODELO
+CONFIG = DADOS / "config.json"
 # Os vídeos prontos ficam organizados por formato, estudo e episódio:
 #   Vídeos Editados / Culto Noturno / JOÃO / 03 - 2026-10-05 - A Palavra se fez carne /
 # com o MP4 final e os Shorts na mesma pasta. A pasta antiga ("saida", uma
@@ -101,7 +112,21 @@ def abrir_no_sistema(caminho: str, revelar: bool = False) -> None:
 
 # ------------------------------------------------------------------ config
 def ler_config() -> dict:
-    return json.loads(CONFIG.read_text(encoding="utf-8"))
+    cfg = json.loads(CONFIG.read_text(encoding="utf-8"))
+    if DADOS != _MODELO:
+        # versão nova pode trazer layouts, modelos ou pregadores novos:
+        # completa o que falta sem mexer no que a pessoa já tem
+        try:
+            modelo = json.loads((_MODELO / "config.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return cfg
+        for chave, valor in modelo.items():
+            if chave not in cfg:
+                cfg[chave] = valor
+            elif isinstance(valor, dict) and isinstance(cfg[chave], dict) and chave != "estudos":
+                for k, v in valor.items():
+                    cfg[chave].setdefault(k, v)
+    return cfg
 
 
 def gravar_config(cfg: dict) -> None:
