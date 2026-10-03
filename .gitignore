@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+estudio/credenciais/
+.DS_Store

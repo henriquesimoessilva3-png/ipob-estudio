@@ -2,353 +2,115 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="estudio-publico" content="1">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Estúdio IPOB</title>
-<link rel="icon" href="assets/logo-redondo.png">
-<link rel="stylesheet" href="web/painel.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IPOB Estúdio</title>
+<link rel="icon" href="logo.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Página de entrada: o que é o Estúdio, botão de baixar, passo a passo por sistema. */
+:root{
+  --fundo:#F6F7F4; --papel:#FFFFFF; --tinta:#1B2420; --tinta-fraca:#5C6862;
+  --linha:#D9DED9; --verde:#16302F; --verde-claro:#E4EFEA; --realce:#2F8F6B;
+  --titulo:"Source Serif 4",Georgia,serif; --texto:"Source Sans 3","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --fundo:#121917; --papel:#1A2421; --tinta:#ECF0ED; --tinta-fraca:#A3ADA7;
+  --linha:#2C3833; --verde:#8FD3B5; --verde-claro:#1F312B; --realce:#63C39A; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --fundo:#121917; --papel:#1A2421; --tinta:#ECF0ED; --tinta-fraca:#A3ADA7;
+  --linha:#2C3833; --verde:#8FD3B5; --verde-claro:#1F312B; --realce:#63C39A; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--tinta);font:17px/1.5 var(--texto)}
+.pagina{max-width:860px;margin:0 auto;padding:36px 16px 70px}
+header{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+header img{width:64px;height:64px;border-radius:50%}
+h1{font:700 32px/1.1 var(--titulo);margin:0;text-wrap:balance}
+header p{margin:4px 0 0;color:var(--tinta-fraca)}
+.intro{font-size:19px;max-width:62ch}
+.baixar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:26px 0 10px}
+.botao{display:inline-block;background:var(--verde);color:var(--papel);text-decoration:none;font-weight:700;padding:14px 22px;border-radius:10px}
+.botao.leve{background:var(--verde-claro);color:var(--verde)}
+.nota{color:var(--tinta-fraca);font-size:15px}
+h2{font:600 15px/1.2 var(--texto);letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-fraca);margin:34px 0 12px}
+.passos{background:var(--papel);border:1px solid var(--linha);border-radius:12px;padding:6px 20px}
+.passos ol{margin:0;padding:12px 0 12px 22px}
+.passos li{margin:8px 0}
+.passos li::marker{font-weight:700;color:var(--realce)}
+code{background:var(--verde-claro);color:var(--verde);padding:1px 6px;border-radius:5px;font-size:.92em}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:700px){.duas{grid-template-columns:1fr}}
+.cartao{background:var(--papel);border:1px solid var(--linha);border-radius:12px;padding:18px}
+.cartao h3{margin:0 0 6px;font:700 19px var(--titulo)}
+.cartao p{margin:0;color:var(--tinta-fraca);font-size:15px}
+ul.lista{padding-left:20px;margin:0}
+ul.lista li{margin:6px 0}
+footer{margin-top:40px;color:var(--tinta-fraca);font-size:14px}
+</style>
 </head>
 <body>
+<div class="pagina">
+  <header>
+    <img src="logo.png" alt="">
+    <div>
+      <h1>IPOB Estúdio</h1>
+      <p>Igreja Presbiteriana de Ouro Branco · edição dos vídeos do culto e da EBD</p>
+    </div>
+  </header>
 
-<header>
-  <h1>Estúdio IPOB</h1>
-  <span>edição semanal do culto e da EBD</span>
-  <div class="ambiente" id="ambiente"></div>
-</header>
+  <p class="intro">Cole o link da transmissão do YouTube e o Estúdio faz o resto: acha onde a pregação começa, corta, gera capa e tarja no padrão da igreja, limpa o áudio, cria legenda e Shorts, e deixa tudo pronto para subir ao canal.</p>
 
-<main>
-  <!-- ============================ coluna da esquerda ==================== -->
-  <div>
-
-    <section class="cartao">
-      <h2><em>1</em> Qual transmissão</h2>
-
-      <div class="abas" id="abas"></div>
-
-      <div class="campo">
-        <label for="url">Link da transmissão no YouTube</label>
-        <input type="text" id="url" placeholder="https://www.youtube.com/live/…"
-               autocomplete="off" spellcheck="false">
-        <p class="dica">Cole o link da live inteira. O Estúdio lê a transcrição
-          automática e procura sozinho onde a pregação começa.</p>
-      </div>
-
-      <button class="acao" id="btAnalisar">Analisar transmissão</button>
-      <div id="avisoAnalise"></div>
-
-      <details class="ajuda" id="blocoBiblioteca">
-        <summary>Ou retome um vídeo já produzido</summary>
-        <p class="dica">Para gerar Shorts de uma pregação de outra semana, sem
-          refazer o corte.</p>
-        <div id="biblioteca"></div>
-      </details>
-    </section>
-
-    <section class="cartao" id="cartaoCorte">
-      <h2><em>2</em> Onde cortar</h2>
-      <div id="resumoVideo" class="dica" style="margin-bottom:14px">
-        Cole o link acima e clique em <b>Analisar transmissão</b>. O Estúdio lê a
-        transcrição e preenche estes campos com o trecho que encontrar.
-      </div>
-      <div id="achado"></div>
-
-      <div class="linha corte">
-        <div class="campo" style="margin:0">
-          <label for="inicio">Começa em</label>
-          <input type="text" id="inicio" placeholder="hh:mm:ss">
-        </div>
-        <div class="campo" style="margin:0">
-          <label for="fim">Termina em</label>
-          <input type="text" id="fim" placeholder="hh:mm:ss">
-        </div>
-        <button class="acao leve" id="btConferir">Ouvir o trecho</button>
-        <button class="acao" id="btGravarCorte" title="Guarda este começo e fim para esta transmissão e ensina o aprendizado">Gravar corte</button>
-      </div>
-      <div id="avisoCorte"></div>
-
-      <div class="chips" id="alternativas"></div>
-      <div class="transcricao oculto" id="transcricao"></div>
-    </section>
-
-    <section class="cartao" id="cartaoVisual">
-      <h2><em>3</em> Estudo e aparência</h2>
-
-      <div class="modo-estudo" id="modoEstudo">
-        <button data-modo="existente">Estudo existente</button>
-        <button data-modo="novo">Novo estudo</button>
-      </div>
-
-      <!-- escolher um estudo que já existe: continua a sequência com o mesmo visual -->
-      <div id="painelEstudos" class="oculto">
-        <div class="lista-estudos" id="listaEstudos"></div>
-      </div>
-
-      <!-- o estudo escolhido: linha do tempo dos episódios -->
-      <div id="estudoAtual" class="oculto"></div>
-
-      <div id="aparenciaCompleta">
-      <div id="avisoSerie"></div>
-
-      <div class="linha duas" id="linhaNomeEstudo">
-        <div class="campo">
-          <label for="nomeEstudo">Nome do estudo (série)</label>
-          <input type="text" id="nomeEstudo" placeholder="Ex.: JOÃO, APOCALIPSE, A CONFISSÃO DE FÉ…"
-                 autocomplete="off">
-        </div>
-        <div class="campo">
-          <label for="primeiroEpisodio">Começa no episódio</label>
-          <input type="number" id="primeiroEpisodio" min="1" value="1">
-        </div>
-      </div>
-
-      <label>Layout da capa</label>
-      <div class="layouts" id="layouts"></div>
-      <div class="linha tres" id="linhaFotos" style="margin-top:14px"></div>
-      <div class="layout-descricao" id="layoutDescricao"></div>
-
-      <label style="margin-top:16px">Cores</label>
-      <div class="modelos" id="modelos"></div>
-
-      <div class="linha tres" style="margin-top:16px">
-        <div class="campo">
-          <label for="cor">Cor da série</label>
-          <input type="color" id="cor">
-        </div>
-        <div class="campo">
-          <label for="destaque">Cor de destaque</label>
-          <input type="color" id="destaque">
-        </div>
-        <div class="campo">
-          <label for="fundo">Fundo da capa</label>
-          <select id="fundo"></select>
-        </div>
-      </div>
-
-      <div class="linha tres">
-        <div class="campo">
-          <label for="tarja_fundo">Barra da tarja</label>
-          <input type="color" id="tarja_fundo">
-        </div>
-        <div class="campo">
-          <label for="tarja_altura">Altura da tarja</label>
-          <input type="range" id="tarja_altura" min="90" max="230" step="2">
-        </div>
-        <div class="campo">
-          <label for="marca">Logo sobre o vídeo</label>
-          <select id="marca">
-            <option value="sim">Mostrar no canto</option>
-            <option value="nao">Não mostrar</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="iniciar-estudo oculto" id="blocoSalvarVisual">
-        <button class="acao" id="btSalvarVisual">Salvar aparência no estudo</button>
-        <span class="dica" style="margin-left:10px">layout, cores, fotos e pregadores
-          passam a valer para os próximos episódios</span>
-        <div id="avisoSalvarVisual" style="margin-top:10px"></div>
-      </div>
-
-      <div class="iniciar-estudo" id="blocoIniciar">
-        <button class="acao" id="btIniciarEstudo">Iniciar estudo com esta aparência</button>
-        <p class="dica">Grava série, layout, cores e pregador. Das próximas vezes é só
-          escolher o estudo em <b>Estudo existente</b>: a capa vem igual e o número
-          do episódio segue a sequência.</p>
-      </div>
-      </div><!-- /aparenciaCompleta -->
-
-      <p class="dica" style="margin-top:14px">Para ir além destas opções, edite
-        <b>estudio/artes/estilo.css</b>.</p>
-    </section>
-
-    <section class="cartao" id="cartaoDados">
-      <h2><em>4</em> O que vai na capa</h2>
-
-      <div class="linha duas">
-        <div class="campo">
-          <label for="serie">Série</label>
-          <input type="text" id="serie">
-        </div>
-        <div class="campo">
-          <label for="episodio">Episódio / aula</label>
-          <input type="text" id="episodio">
-        </div>
-      </div>
-
-      <div class="campo">
-        <label for="tema">Tema</label>
-        <input type="text" id="tema" placeholder="É impossível fugir de Deus fora de Deus">
-      </div>
-
-      <div class="linha duas">
-        <div class="campo">
-          <label for="referencia" id="rotuloRef">Referência bíblica</label>
-          <input type="text" id="referencia" placeholder="Amós 9. 1-10">
-        </div>
-        <div class="campo">
-          <label for="data">Data do culto</label>
-          <input type="date" id="data">
-        </div>
-      </div>
-
-      <div class="campo">
-        <label for="pregador">Quem pregou</label>
-        <select id="pregador"></select>
-      </div>
-
-      <div class="campo" id="campoCapa">
-        <label>Quem aparece na capa</label>
-        <div class="escolha-pregadores" id="pregadoresCapa"></div>
-      </div>
-    </section>
-
-    <section class="cartao" id="cartaoProduzir">
-      <h2><em>5</em> Produzir</h2>
-      <div class="linha duas" style="align-items:stretch">
-        <div>
-          <button class="acao grande" id="btProduzir">Vídeo completo</button>
-          <p class="dica" style="margin-top:6px">Corta, monta capa e tarja, legenda, título e descrição.</p>
-        </div>
-        <div>
-          <button class="acao grande leve" id="btSoShorts">Só os Shorts</button>
-          <p class="dica" style="margin-top:6px">Sem o vídeo completo: marque os trechos no passo 6 e gere.</p>
-        </div>
-      </div>
-      <p class="dica" id="dicaProduzir"></p>
-
-      <div class="oculto" id="andamento">
-        <div class="barra"><i id="barraProgresso" style="width:0"></i></div>
-        <div class="etapa" id="etapa"></div>
-        <div class="detalhe" id="detalhe"></div>
-        <div class="registro" id="registro"></div>
-        <button class="acao leve" id="btParar" style="margin-top:10px">Parar a produção</button>
-      </div>
-
-      <div class="pronto oculto" id="pronto">
-        <h3>Vídeo pronto</h3>
-        <p id="prontoArquivo"></p>
-        <p id="prontoTitulo"></p>
-        <div class="botoes">
-          <button class="acao" id="btAbrirPasta">Abrir a pasta</button>
-          <button class="acao leve" id="btOutro">Fazer outro</button>
-        </div>
-
-        <div class="youtube" id="youtube">
-          <h4>Subir para o YouTube</h4>
-          <div id="ytEstado"></div>
-
-          <div class="oculto" id="ytPronto">
-            <div class="linha duas" style="margin-top:10px">
-              <div class="campo" style="margin:0">
-                <label for="ytPrivacidade">Como deve subir</label>
-                <select id="ytPrivacidade">
-                  <option value="unlisted">Não listado — só quem tem o link</option>
-                  <option value="private">Privado — só você</option>
-                  <option value="public">Público</option>
-                </select>
-              </div>
-              <div class="campo" style="margin:0;align-self:end">
-                <button class="acao" id="btSubir">Subir agora</button>
-              </div>
-            </div>
-            <p class="dica">Sobe o vídeo, aplica a miniatura, manda a legenda e
-              joga na playlist da série. Nada acontece até você clicar.</p>
-          </div>
-
-          <div class="oculto" id="ytAndamento">
-            <div class="barra"><i id="ytBarra" style="width:0"></i></div>
-            <div class="etapa" id="ytEtapa"></div>
-            <div class="detalhe" id="ytDetalhe"></div>
-            <div class="registro" id="ytRegistro"></div>
-          </div>
-
-          <div id="ytResultado"></div>
-        </div>
-      </div>
-
-      <div id="erroProduzir"></div>
-    </section>
-
-    <section class="cartao oculto" id="cartaoShorts">
-      <h2><em>6</em> Shorts</h2>
-      <p class="dica oculto" id="shortsSemVideo" style="margin:-8px 0 12px">
-        Vão para a pasta do episódio (série, número e tema do passo 4), mesmo sem o
-        vídeo completo. Se depois você produzir o vídeo, ele cai na mesma pasta.
-      </p>
-      <div class="aviso" style="margin:-8px 0 14px">
-        <b>Os Shorts saem da transmissão original, não do vídeo editado.</b>
-        Por isso os tempos são os da live inteira — os mesmos do passo 2 — e dá
-        para pegar qualquer momento, inclusive fora do trecho que você cortou.
-      </div>
-      <p class="dica" style="margin:0 0 14px">
-        A escolha dos trechos é sua — ferramenta de “viralidade” é treinada em
-        inglês e escolhe mal em português. Marque os momentos e o Estúdio faz o
-        resto: reenquadra em 9:16, põe a tarja e queima a fala na tela.
-      </p>
-      <p class="dica" id="fonteShorts" style="margin:-6px 0 14px"></p>
-
-      <div id="trechos"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="acao leve" id="btAddTrecho">+ Acrescentar trecho</button>
-        <button class="acao leve" id="btSugerir">Sugerir trechos</button>
-      </div>
-      <div id="sugestoes"></div>
-
-      <div class="linha quatro" style="margin-top:16px">
-        <div class="campo">
-          <label for="modoShort">Enquadramento</label>
-          <select id="modoShort">
-            <option value="pregador-cheio">Pregador — enche a tela</option>
-            <option value="pregador">Pregador — inteiro, com fundo borrado</option>
-            <option value="completo">Quadro inteiro da transmissão</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label for="legendarShort">Legenda na tela</label>
-          <select id="legendarShort">
-            <option value="sim">Queimar a fala no vídeo</option>
-            <option value="nao">Sem legenda</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label for="tarjaShort">Identificação</label>
-          <select id="tarjaShort">
-            <option value="limpa">Limpo — só a imagem e a fala</option>
-            <option value="completa">Com série, tema e logo</option>
-          </select>
-        </div>
-        <div class="campo" style="align-self:end">
-          <button class="acao" id="btShorts">Gerar os Shorts</button>
-        </div>
-      </div>
-
-      <div class="oculto" id="shortsAndamento">
-        <div class="barra"><i id="shortsBarra" style="width:0"></i></div>
-        <div class="etapa" id="shortsEtapa"></div>
-        <div class="detalhe" id="shortsDetalhe"></div>
-        <div class="registro" id="shortsRegistro"></div>
-        <button class="acao leve" id="btPararShorts" style="margin-top:10px">Parar</button>
-      </div>
-
-      <div id="shortsResultado"></div>
-    </section>
-
+  <div class="baixar">
+    <a class="botao" href="https://github.com/henriquesimoessilva3-png/ipob-estudio/archive/refs/heads/main.zip">Baixar o Estúdio IPOB</a>
+    <span class="nota">Mac ou Windows · grátis · roda no seu computador</span>
   </div>
 
-  <!-- ============================= coluna da direita ==================== -->
-  <div class="previa">
-    <h3>Capa — também vira a miniatura</h3>
-    <div class="moldura"><iframe id="previaCapa"></iframe></div>
-
-    <h3>Tarja — fica o vídeo inteiro</h3>
-    <div class="moldura sobre-video"><iframe id="previaTarja"></iframe></div>
-
-    <p class="dica">Para mudar cores, tamanhos ou posições, edite
-      <b>estudio/artes/estilo.css</b> e atualize esta página. A prévia usa o
-      mesmo arquivo que gera o PNG final.</p>
+  <h2>Instalar</h2>
+  <div class="duas">
+    <div class="cartao">
+      <h3>No Mac</h3>
+      <ol class="passos" style="border:0;padding:0 0 0 18px;background:none">
+        <li>Baixe e abra o arquivo; vai aparecer a pasta <code>ipob-estudio-main</code>. Arraste-a para a pasta <strong>Aplicativos</strong> ou <strong>Documentos</strong>.</li>
+        <li>Entre em <code>estudio</code> e dê dois cliques em <strong>Instalar no Mac.command</strong>. Se o macOS barrar, clique com o botão direito → <strong>Abrir</strong>.</li>
+        <li>Deixe a instalação terminar (10 a 20 minutos na primeira vez). Ela cria o atalho <strong>Abrir Estúdio IPOB</strong> na Mesa.</li>
+      </ol>
+    </div>
+    <div class="cartao">
+      <h3>No Windows</h3>
+      <ol class="passos" style="border:0;padding:0 0 0 18px;background:none">
+        <li>Baixe o arquivo, clique com o botão direito → <strong>Extrair tudo</strong>, e mova a pasta <code>ipob-estudio-main</code> para <strong>Documentos</strong>.</li>
+        <li>Entre em <code>estudio</code> e dê dois cliques em <strong>Instalar no Windows.bat</strong>. Se pedir para rodar de novo depois do Python, rode.</li>
+        <li>Ao terminar, use o atalho <strong>Abrir Estúdio IPOB</strong> na Área de Trabalho.</li>
+      </ol>
+    </div>
   </div>
-</main>
 
-<script src="web/painel.js"></script>
+  <h2>Usar</h2>
+  <div class="passos">
+    <ol>
+      <li>Abra o atalho. O painel abre no navegador em <code>localhost:4747</code>.</li>
+      <li>Escolha Culto ou EBD, cole o link da live e clique em <strong>Analisar transmissão</strong>.</li>
+      <li>Confira o corte, escolha o estudo e a aparência, preencha tema e referência.</li>
+      <li>Clique em <strong>Vídeo completo</strong> (ou <strong>Só os Shorts</strong>). O resultado fica em <code>Vídeos / Estudio IPOB / Vídeos Editados</code>.</li>
+    </ol>
+  </div>
+
+  <h2>O que o computador precisa</h2>
+  <div class="cartao">
+    <ul class="lista">
+      <li>Mac (Apple Silicon ou Intel) ou Windows 10/11. Uns 10 GB livres.</li>
+      <li>Internet para baixar a transmissão (um culto de 1h30 tem cerca de 1,5 GB).</li>
+      <li>A primeira produção demora mais: o Estúdio baixa o modelo de legenda uma única vez.</li>
+      <li>Para subir ao YouTube pelo painel, é preciso uma credencial do canal — peça ao Henrique.</li>
+    </ul>
+  </div>
+
+  <h2>Também aqui</h2>
+  <div class="duas">
+    <a class="cartao" href="fila.html" style="text-decoration:none;color:inherit"><h3>Fila de sermões</h3><p>Monte a lista de vídeos a editar (link, data, estudo, tema) e envie para quem produz.</p></a>
+    <a class="cartao" href="painel.html" style="text-decoration:none;color:inherit"><h3>Painel remoto</h3><p>A tela do painel para usar um Estúdio que esteja ligado em outro computador com endereço público.</p></a>
+  </div>
+
+  <footer>Código aberto em <a href="https://github.com/henriquesimoessilva3-png/ipob-estudio">github.com/henriquesimoessilva3-png/ipob-estudio</a>. Para atualizar, baixe de novo e substitua a pasta, guardando antes a subpasta <code>estudio/dados</code> (os estudos). Os vídeos ficam fora, em Vídeos / Estudio IPOB.</footer>
+</div>
 </body>
 </html>

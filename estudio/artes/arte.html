@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Arte — Estúdio IPOB</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<div id="alvo"></div>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Monta a arte pedida pela URL. A mesma página serve para a prévia do painel
+   e para o PNG final — por isso o que você vê no painel é exatamente o que sai.
+
+   Exemplos:
+     arte.html?tipo=capa&formato=culto&serie=AMÓS&ep=11&tema=...&ref=Amós 9.1-10
+     arte.html?tipo=tarja&formato=ebd&serie=...&tema=...&pregador=isaias
+--------------------------------------------------------------------------- */
+
+const p = new URLSearchParams(location.search);
+const v = (k, padrao = "") => (p.get(k) ?? padrao);
+
+const tipo     = v("tipo", "capa");
+const formato  = v("formato", "culto");
+const escala   = parseFloat(v("escala", "1"));
+/* O layout da capa. "classico" é o visual das capas já publicadas; os outros
+   são alternativas com a mesma cor de série. A tarja não muda com o layout:
+   ela precisa ser a mesma durante o vídeo inteiro, seja qual for a capa. */
+const layout   = v("layout", "classico") || "classico";
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+
+/* ---------------------------------------------------------------------------
+   Aparência vinda do painel.
+
+   O parâmetro `vars` carrega qualquer variável do estilo.css, separada por ";".
+   Ex.:  vars=--cor-base:%23102E16;--tarja-fundo:%2308292E
+   Assim o painel controla cor da série, cor da tarja, fundo da capa e o que
+   mais for preciso, sem precisar mexer no arte.html de novo.
+--------------------------------------------------------------------------- */
+function aplicarAparencia() {
+  const raiz = document.documentElement.style;
+
+  const atalhos = {
+    cor:          "--cor-base",
+    destaque:     "--cor-destaque",
+    tarja_fundo:  "--tarja-fundo",
+    tarja_altura: "--tarja-altura",
+  };
+  for (const [param, variavel] of Object.entries(atalhos)) {
+    const valor = p.get(param);
+    if (valor) raiz.setProperty(variavel, valor);
+  }
+
+  const fundo = p.get("fundo");
+  if (fundo) raiz.setProperty("--imagem-fundo", `url("/assets/fundos/${fundo}")`);
+
+  for (const par of (p.get("vars") || "").split(";")) {
+    const i = par.indexOf(":");
+    if (i > 0) raiz.setProperty(par.slice(0, i).trim(), par.slice(i + 1).trim());
+  }
+}
+
+async function montar() {
+  aplicarAparencia();
+
+  let cfg = { pregadores: {} };
+  try { cfg = await (await fetch("/api/config")).json(); } catch (e) {}
+  const P = cfg.pregadores || {};
+
+  const serie     = v("serie", "SÉRIE");
+  const tema      = v("tema", "Tema da mensagem");
+  const ref       = v("ref", "");
+  const ep        = v("ep", "");
+  const badge     = v("badge", "EP.");            /* prefixo do número na capa */
+  const chaves    = v("pregadores").split(",").filter(Boolean);
+  const marca     = v("marca", "sim") !== "nao";
+  const selo      = marca
+    ? `<img class="marca" src="/assets/${v("marca_arquivo", "logo-redondo.png")}" alt="">`
+    : "";
+  const soloChave = v("pregador", chaves[0] || "");
+  const solo      = P[soloChave] || { longo: "", foto: "" };
+
+  /* Cada pregador pode ter várias fotos (config → pregadores[k].fotos). O
+     painel manda a escolha em `fotos=vittor:posada,isaias:video`; sem escolha
+     vale a foto padrão do pregador. */
+  const escolhas = Object.fromEntries(v("fotos").split(",").filter(Boolean)
+    .map(par => par.split(":")));
+  const fotoDe = k => {
+    const p = P[k] || {};
+    const alt = (p.fotos || []).find(f => f.id === escolhas[k]);
+    return alt ? { foto: alt.foto || p.foto, recorte: alt.recorte || p.recorte } : p;
+  };
+  const foto = k => "/assets/pregadores/" + (fotoDe(k).foto || "");
+
+  let html = "";
+
+  /* ---------------------------------------------------- CAPA DO CULTO */
+  if (tipo === "capa" && CLAROS.includes(layout)) {
+    html = capaClara(layout, { formato, serie, tema, ref, ep, badge, chaves, soloChave, P, foto, fotoDe });
+  }
+  else if (tipo === "capa" && formato === "culto" && layout !== "classico") {
+    html = capaCultoAlternativa(layout, { serie, tema, ref, ep, badge, chaves, P, foto });
+  }
+  else if (tipo === "capa" && formato === "ebd" && layout !== "classico") {
+    html = capaEbdAlternativa(layout, { serie, tema, ref, ep, soloChave, solo, foto });
+  }
+  else if (tipo === "capa" && formato === "culto") {
+    const fotos = chaves.map(k => `
+      <div class="pregador">
+        <img src="${foto(k)}" alt="">
+        <span>${esc((P[k] || {}).curto || "")}</span>
+      </div>`).join("");
+
+    html = `
+      <div class="palco capa-culto">
+        <div class="foto-fundo"><div class="imagem"></div><div class="sombra"></div><div class="luz"></div></div>
+        <div class="canto"><img src="/assets/logo-ipob.png" alt=""></div>
+        <div class="serie-rotulo">SÉRIE</div>
+        <div class="serie-nome">${esc(serie)}</div>
+        ${ep ? `<div class="caixa ep-badge">${esc(badge)} ${esc(ep)}</div>` : ""}
+        <div class="caixa tema">${esc(tema)}</div>
+        ${ref ? `<div class="caixa ref">Referência:<b>${esc(ref)}</b></div>` : ""}
+        <div class="pregadores">${fotos}</div>
+      </div>`;
+  }
+
+  /* ------------------------------------- TARJA VERTICAL (Shorts 9:16) */
+  else if (tipo === "tarja" && v("vertical") === "1") {
+    html = `
+      <div class="palco vertical transparente tarja-vertical">
+        <div class="v-topo">
+          ${ep ? `<div class="v-badge">${esc(badge)} ${esc(ep)}</div>` : ""}
+          <div class="v-serie">${esc(serie)}</div>
+        </div>
+        ${marca ? `<img class="v-marca" src="/assets/${v("marca_arquivo","logo-redondo.png")}" alt="">` : ""}
+        <div class="v-rodape">
+          <div class="v-tema">${esc(tema)}</div>
+          ${ref ? `<div class="v-ref">Referência:<b>${esc(ref)}</b></div>` : ""}
+        </div>
+      </div>`;
+  }
+
+  /* --------------------------------------------------- TARJA DO CULTO */
+  else if (tipo === "tarja" && formato === "culto") {
+    html = `
+      <div class="palco transparente tarja-culto">
+        ${selo}
+        ${etiquetaDaSerie(serie, false, v("cor", ""))}
+        <div class="barra">
+          ${ep ? `<div class="t-badge">${esc(badge)} ${esc(ep)}</div>` : ""}
+          <div class="t-tema">${esc(tema)}</div>
+          ${ref ? `<div class="t-ref">Referência:<b>${esc(ref)}</b></div>` : ""}
+        </div>
+      </div>`;
+  }
+
+  /* ------------------------------------------------------ CAPA DA EBD */
+  else if (tipo === "capa" && formato === "ebd") {
+    html = `
+      <div class="palco capa-ebd">
+        <div class="onda"></div>
+        <div class="barra-serie">
+          <div class="selo">SÉRIE</div>
+          <div class="nome">${esc(serie)}</div>
+        </div>
+        <div class="canto"><span>ESCOLA
+BÍBLICA
+DOMINICAL</span></div>
+        <img class="logo" src="/assets/logo-transparente.png" alt="">
+        ${ep ? `<div class="caixa numero">${esc(ep)}</div>` : ""}
+        <div class="caixa tema">${esc(tema)}</div>
+        ${ref ? `<div class="caixa capitulo">${esc(ref)}</div>` : ""}
+        ${soloChave ? `
+        <div class="pregador">
+          <img src="${foto(soloChave)}" alt="">
+          <span>${esc(solo.longo)}</span>
+        </div>` : ""}
+      </div>`;
+  }
+
+  /* ---------------------------- UMA FALA DA LEGENDA QUEIMADA DO SHORT */
+  else if (tipo === "legenda") {
+    html = `
+      <div class="palco faixa-legenda transparente">
+        <div class="legenda-short"><span>${esc(v("texto")).replace(/\n/g, "<br>")}</span></div>
+      </div>`;
+  }
+
+  /* ----------------------------------------------------- TARJA DA EBD */
+  else {
+    html = `
+      <div class="palco transparente tarja-ebd">
+        ${selo}
+        ${etiquetaDaSerie(serie, true, v("cor", ""))}
+        <div class="barra">
+          <div class="esquerda">
+            <div class="e-serie">${esc(serie)}</div>
+            <div class="e-tema">Tema:<i>&nbsp;“${esc(tema)}”</i></div>
+          </div>
+          <div class="pastor">${esc(solo.longo)}</div>
+          <div class="listras"></div>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById("alvo").innerHTML = html;
+
+  /* a prévia do painel usa escala menor; o PNG final usa escala 1 */
+  const palco = document.querySelector(".palco");
+  if (escala !== 1) {
+    palco.style.transform = `scale(${escala})`;
+    document.body.style.width  = (1920 * escala) + "px";
+    document.body.style.height = (1080 * escala) + "px";
+  }
+
+  /* espera as fontes e as fotos antes de medir qualquer coisa */
+  await (document.fonts ? document.fonts.ready : Promise.resolve());
+  await Promise.all([...document.images].map(img =>
+    img.complete ? null : new Promise(r => { img.onload = img.onerror = r; })
+  ));
+
+  ajustarTextos();
+
+  document.documentElement.setAttribute("data-pronto", "1");
+}
+
+/* A etiqueta no alto à esquerda da tarja: "SÉRIE" + nome, na cor da série
+   (a mesma barra da tarja). Na EBD leva o prefixo "Escola Bíblica Dominical",
+   como nas tarjas antigas do Filmora. Fica o vídeo inteiro, junto do selo
+   redondo no canto direito. */
+function etiquetaDaSerie(serie, ebd, cor) {
+  if (!serie) return "";
+  const pre = ebd ? "Escola<br>Bíblica<br>Dominical" : "Culto<br>Noturno";
+  const escura = luminancia(cor) < 0.3 ? " escura" : "";
+  return `
+    <div class="etiqueta-serie${escura}">
+      <span class="pre"><i>${pre}</i></span>
+      <span class="rotulo">SÉRIE</span>
+      <span class="nome">${esc(serie)}</span>
+    </div>`;
+}
+
+/* 0 (preto) a 1 (branco); cor desconhecida conta como média */
+function luminancia(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || "");
+  if (!m) return 0.5;
+  const n = parseInt(m[1], 16);
+  return (0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255;
+}
+
+/* --------------------------------------------------------------------------
+   LAYOUTS ALTERNATIVOS DA CAPA
+   Cada um usa as mesmas variáveis de cor (--cor-base, --cor-destaque) e a
+   mesma foto de fundo em duotone. O que muda é a composição. A lista do
+   painel vem de dados/config.json → "layouts"; o nome aqui tem de bater.
+-------------------------------------------------------------------------- */
+const FOTO_DUOTONE = `<div class="foto-fundo"><div class="imagem"></div><div class="sombra"></div><div class="luz"></div></div>`;
+
+function pregadoresRedondos(chaves, P, foto, classe = "redondos") {
+  if (!chaves.length) return "";
+  return `<div class="${classe}">` + chaves.map(k => `
+    <div class="pessoa">
+      <img src="${foto(k)}" alt="">
+      <span>${esc(((P[k] || {}).curto || "").replace(/\n/g, " "))}</span>
+    </div>`).join("") + `</div>`;
+}
+
+function capaCultoAlternativa(qual, d) {
+  const { serie, tema, ref, ep, badge, chaves, P, foto } = d;
+  const epTexto = ep ? `${esc(badge)} ${esc(ep)}`.trim() : "";
+
+  if (qual === "cheia") {
+    /* a foto ocupa tudo; o texto fica embaixo à esquerda sobre um véu escuro */
+    return `
+      <div class="palco alt alt-culto layout-cheia">
+        ${FOTO_DUOTONE}
+        <div class="veu"></div>
+        <img class="selo-canto" src="/assets/logo-redondo.png" alt="">
+        ${epTexto ? `<div class="ep-grande">${epTexto}</div>` : ""}
+        <div class="bloco">
+          <div class="olho">SÉRIE</div>
+          <div class="serie">${esc(serie)}</div>
+          <div class="tema">${esc(tema)}</div>
+          ${ref ? `<div class="ref">${esc(ref)}</div>` : ""}
+        </div>
+        ${pregadoresRedondos(chaves, P, foto)}
+      </div>`;
+  }
+
+  if (qual === "painel") {
+    /* painel sólido à esquerda com o texto; foto à direita; pregador na emenda */
+    return `
+      <div class="palco alt alt-culto layout-painel">
+        ${FOTO_DUOTONE}
+        <div class="lateral">
+          <img class="logo-chip" src="/assets/logo-ipob.png" alt="">
+          <div class="olho">SÉRIE</div>
+          <div class="serie">${esc(serie)}</div>
+          <div class="filete"></div>
+          <div class="tema">${esc(tema)}</div>
+          <div class="rodape-painel">
+            ${epTexto ? `<span class="pill ep">${epTexto}</span>` : ""}
+            ${ref ? `<span class="pill ref">${esc(ref)}</span>` : ""}
+          </div>
+        </div>
+        ${pregadoresRedondos(chaves, P, foto, "redondos emenda")}
+      </div>`;
+  }
+
+  if (qual === "moldura") {
+    /* composição centrada, com moldura fina na cor de destaque: sóbria */
+    return `
+      <div class="palco alt alt-culto layout-moldura">
+        ${FOTO_DUOTONE}
+        <div class="veu"></div>
+        <div class="quadro"></div>
+        <img class="selo-topo" src="/assets/logo-redondo.png" alt="">
+        <div class="centro">
+          <div class="olho">SÉRIE${epTexto ? ` &nbsp;·&nbsp; ${epTexto}` : ""}</div>
+          <div class="serie">${esc(serie)}</div>
+          <div class="ornamento"><i></i><b></b><i></i></div>
+          <div class="tema">${esc(tema)}</div>
+          ${ref ? `<div class="ref">${esc(ref)}</div>` : ""}
+        </div>
+        ${pregadoresRedondos(chaves, P, foto, "redondos centrados")}
+      </div>`;
+  }
+
+  if (qual === "tema") {
+    /* o tema é o protagonista — é o que se lê na miniatura pequena */
+    return `
+      <div class="palco alt alt-culto layout-tema">
+        ${FOTO_DUOTONE}
+        <div class="veu"></div>
+        <div class="topo">
+          <img class="logo-chip" src="/assets/logo-ipob.png" alt="">
+          <span class="pill serie">SÉRIE ${esc(serie)}</span>
+          ${epTexto ? `<span class="pill ep">${epTexto}</span>` : ""}
+        </div>
+        <div class="bloco">
+          <div class="tema">${esc(tema)}</div>
+          ${ref ? `<div class="ref"><b></b>${esc(ref)}</div>` : ""}
+        </div>
+        ${pregadoresRedondos(chaves, P, foto, "redondos emenda-baixo")}
+      </div>`;
+  }
+
+  return `<div class="palco capa-culto"><div class="tema caixa">Layout desconhecido: ${esc(qual)}</div></div>`;
+}
+
+/* ---------------------------------------------------------------------------
+   LAYOUTS CLAROS — os três que seguem o que o Henrique gostou nas referências
+   (IP Catanduva, IP Semear, IP Pinheiros): fundo branco ou degradê da cor da
+   série, tipografia limpa e o PREGADOR RECORTADO (sem fundo). Servem para o
+   culto e para a EBD; o que muda é o rótulo e quem aparece.
+   O recorte vem de config → pregadores[k].recorte; sem ele, cai na foto
+   retangular dentro de um cartão.
+--------------------------------------------------------------------------- */
+const CLAROS = ["branco", "cartao", "recorte", "faixa", "dividido", "rodape", "citacao",
+                "cartaz", "jornal", "bloco", "foto-clara", "tinta", "duas-cores", "numero",
+                "moldura-clara", "coluna", "etiqueta"];
+
+function capaClara(qual, d) {
+  const { formato, serie, tema, ref, ep, badge, chaves, soloChave, P, foto, fotoDe } = d;
+  const ebd = formato === "ebd";
+  const rotulo = ebd ? "ESCOLA BÍBLICA DOMINICAL" : "SÉRIE";
+  const epTexto = ep ? (ebd ? `AULA ${esc(ep)}` : `${esc(badge)} ${esc(ep)}`.trim()) : "";
+  const quem = ebd ? (soloChave ? [soloChave] : []) : chaves;
+  const principal = quem[0] || "";
+  const pessoa = P[principal] || {};
+  const nome = (pessoa.longo || pessoa.curto || "").replace(/\n/g, " ");
+  const rec = fotoDe(principal).recorte;
+  const recorte = rec ? `/assets/pregadores/${rec}` : "";
+  const figura = principal ? (recorte
+    ? `<img class="recorte-pessoa" src="${recorte}" alt="">`
+    : `<img class="cartao-pessoa" src="${foto(principal)}" alt="">`) : "";
+  const outros = quem.slice(1).map(k => (P[k] || {}).longo || "").filter(Boolean);
+  const nomes = [nome, ...outros].filter(Boolean).join("  ·  ");
+
+  if (qual === "branco") {
+    return `
+      <div class="palco alt claro layout-branco">
+        <div class="painel-cor">${figura}</div>
+        <div class="painel-branco">
+          <img class="logo" src="/assets/logo-ipob.png" alt="">
+          <div class="miolo">
+            <div class="pill rotulo">${rotulo}${epTexto ? ` &nbsp;·&nbsp; ${epTexto}` : ""}</div>
+            <div class="serie">${esc(serie)}</div>
+            <div class="tema">${esc(tema)}</div>
+            ${ref ? `<div class="ref">${esc(ref)}</div>` : ""}
+          </div>
+        </div>
+        ${nomes ? `<div class="nome">${esc(nomes)}</div>` : ""}
+      </div>`;
+  }
+
+  if (qual === "cartao") {
+    return `
+      <div class="palco alt claro layout-cartao">
+        <img class="logo" src="/assets/logo-ipob.png" alt="">
+        <div class="figura">${figura}</div>
+        <div class="miolo">
+          ${ref ? `<div class="ref">${esc(ref)}</div>` : ""}
+          <div class="tema">“${esc(tema)}”</div>
+        </div>
+        <div class="barra">
+          <span class="esq">${rotulo} <b>${esc(serie)}</b>${epTexto ? ` &nbsp;·&nbsp; ${epTexto}` : ""}</span>
+          <span class="dir">${esc(nomes)}</span>
+        </div>
+      </div>`;
+  }
+
+  if (qual === "recorte") {
+    return `
+      <div class="palco alt claro layout-recorte">
+        <img class="marca-fundo" src="/assets/logo-redondo.png" alt="">
+        <div class="figura">${figura}</div>
+        <div class="miolo">
+          <div class="pill rotulo">${rotulo} <b>${esc(serie)}</b>${epTexto ? ` &nbsp;·&nbsp; ${epTexto}` : ""}</div>
+          <div class="tema">${esc(tema)}</div>
+          ${nomes ? `<div class="pill nome">${esc(nomes)}</div>` : ""}
+          ${ref ? `<div class="ref">${esc(ref)}</div>` : ""}
+        </div>
+        <img class="logo-chip" src="/assets/logo-ipob.png" alt="">
+      </div>`;
+  }
+  /* ---- a segunda leva: 14 composições, todas claras, mensagem em primeiro ---- */
+  const ctx = { rotulo, epTexto, serie, tema, ref, nomes, figura, ep };
+  const t = SEGUNDA_LEVA[qual];
+  return t ? t(ctx) : "";
+}
+
+const logoBranco = `<img class="logo" src="/assets/logo-ipob.png" alt="">`;
+const logoChip   = `<img class="logo-chip" src="/assets/logo-ipob.png" alt="">`;
+const linhaSerie = (c) => `${c.rotulo} <b>${esc(c.serie)}</b>${c.epTexto ? ` &nbsp;·&nbsp; ${c.epTexto}` : ""}`;
+const refOu = (c, classe = "ref") => c.ref ? `<div class="${classe}">${esc(c.ref)}</div>` : "";
+const nomeOu = (c, classe = "nome") => c.nomes ? `<div class="${classe}">${esc(c.nomes)}</div>` : "";
+const figuraPequena = (c) => c.figura ? `<div class="figura-pequena">${c.figura}</div>` : "";
+
+const SEGUNDA_LEVA = {
+  "faixa": c => `
+    <div class="palco alt claro layout-faixa">
+      <div class="faixa"><span>${linhaSerie(c)}</span></div>
+      ${logoBranco}
+      <div class="miolo"><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      ${figuraPequena(c)}${nomeOu(c)}
+    </div>`,
+  "dividido": c => `
+    <div class="palco alt claro layout-dividido">
+      <div class="metade cor"><div class="tema">${esc(c.tema)}</div></div>
+      <div class="metade branca">
+        ${logoBranco}
+        <div class="pill rotulo">${c.rotulo}${c.epTexto ? ` &nbsp;·&nbsp; ${c.epTexto}` : ""}</div>
+        <div class="serie">${esc(c.serie)}</div>
+        ${refOu(c)}
+        ${figuraPequena(c)}${nomeOu(c)}
+      </div>
+    </div>`,
+  "rodape": c => `
+    <div class="palco alt claro layout-rodape">
+      <div class="miolo"><div class="pill rotulo">${linhaSerie(c)}</div><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      <div class="barra">${logoBranco}<span class="dir">${esc(c.nomes)}</span></div>
+    </div>`,
+  "citacao": c => `
+    <div class="palco alt claro layout-citacao">
+      ${logoBranco}
+      <div class="aspas">“</div>
+      <div class="miolo"><div class="tema">${esc(c.tema)}</div><div class="linha-base">${refOu(c, "ref")}<span class="serie-inline">${linhaSerie(c)}</span></div></div>
+      ${figuraPequena(c)}${nomeOu(c)}
+    </div>`,
+  "cartaz": c => `
+    <div class="palco alt claro layout-cartaz">
+      <div class="quadro"></div>
+      <div class="pill rotulo">${linhaSerie(c)}</div>
+      <div class="tema">${esc(c.tema)}</div>
+      <div class="rodape-cartaz">${logoChip}${refOu(c)}${nomeOu(c)}</div>
+      ${figuraPequena(c)}
+    </div>`,
+  "jornal": c => `
+    <div class="palco alt claro layout-jornal">
+      <div class="cabeca"><span>${linhaSerie(c)}</span>${logoBranco}</div>
+      <div class="tema">${esc(c.tema)}</div>
+      <div class="pe">${refOu(c, "ref")}<span>${esc(c.nomes)}</span></div>
+    </div>`,
+  "bloco": c => `
+    <div class="palco alt claro layout-bloco">
+      ${logoBranco}
+      <div class="pill rotulo">${linhaSerie(c)}</div>
+      <div class="bloco"><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      ${figuraPequena(c)}${nomeOu(c)}
+    </div>`,
+  "foto-clara": c => `
+    <div class="palco alt claro layout-foto-clara">
+      ${FOTO_DUOTONE}<div class="veu"></div>
+      ${logoBranco}
+      <div class="miolo"><div class="pill rotulo">${linhaSerie(c)}</div><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      ${figuraPequena(c)}${nomeOu(c)}
+    </div>`,
+  "tinta": c => `
+    <div class="palco alt claro layout-tinta">
+      ${logoBranco}
+      <div class="miolo"><div class="olho">${linhaSerie(c)}</div><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      <div class="bola"></div>${figuraPequena(c)}${nomeOu(c)}
+    </div>`,
+  "duas-cores": c => `
+    <div class="palco alt claro layout-duas-cores">
+      <div class="cima"><div class="pill rotulo">${linhaSerie(c)}</div><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      <div class="baixo">${logoChip}${nomeOu(c)}${figuraPequena(c)}</div>
+    </div>`,
+  "numero": c => `
+    <div class="palco alt claro layout-numero">
+      ${logoBranco}
+      ${c.ep ? `<div class="gigante">${esc(c.ep)}</div>` : ""}
+      <div class="miolo"><div class="olho">${linhaSerie(c)}</div><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      ${nomeOu(c)}
+    </div>`,
+  "moldura-clara": c => `
+    <div class="palco alt claro layout-moldura-clara">
+      <div class="quadro"></div>
+      ${logoBranco}
+      <div class="centro"><div class="olho">${linhaSerie(c)}</div><div class="tema">${esc(c.tema)}</div>${refOu(c)}${nomeOu(c)}</div>
+    </div>`,
+  "coluna": c => `
+    <div class="palco alt claro layout-coluna">
+      <div class="coluna"><span>${c.epTexto || c.rotulo}</span></div>
+      ${logoBranco}
+      <div class="miolo"><div class="olho">${linhaSerie(c)}</div><div class="tema">${esc(c.tema)}</div>${refOu(c)}</div>
+      ${figuraPequena(c)}${nomeOu(c)}
+    </div>`,
+  "etiqueta": c => `
+    <div class="palco alt claro layout-etiqueta">
+      <div class="aba">${linhaSerie(c)}</div>
+      ${logoBranco}
+      <div class="miolo"><div class="tema">${esc(c.tema)}</div><div class="sublinhado"></div>${refOu(c)}</div>
+      ${figuraPequena(c)}${nomeOu(c)}
+    </div>`,
+};
+
+function capaEbdAlternativa(qual, d) {
+  const { serie, tema, ref, ep, soloChave, solo, foto } = d;
+  const pessoa = soloChave ? `
+    <div class="pessoa-grande">
+      <img src="${foto(soloChave)}" alt="">
+      <span>${esc(solo.longo)}</span>
+    </div>` : "";
+
+  if (qual === "quadro") {
+    /* fundo claro; um bloco sólido à esquerda carrega todo o texto */
+    return `
+      <div class="palco alt alt-ebd layout-quadro">
+        <div class="bloco">
+          <div class="tag">ESCOLA BÍBLICA DOMINICAL</div>
+          <div class="olho">SÉRIE</div>
+          <div class="serie">${esc(serie)}</div>
+          <div class="tema">${esc(tema)}</div>
+          <div class="rodape-bloco">
+            ${ep ? `<span class="numero">${esc(ep)}</span>` : ""}
+            ${ref ? `<span class="ref">${esc(ref)}</span>` : ""}
+          </div>
+        </div>
+        <img class="logo" src="/assets/logo-ipob.png" alt="">
+        ${pessoa}
+      </div>`;
+  }
+
+  if (qual === "escuro") {
+    /* a versão noturna: foto em duotone e número grande */
+    return `
+      <div class="palco alt alt-ebd layout-escuro">
+        ${FOTO_DUOTONE}
+        <div class="veu"></div>
+        <img class="selo-canto" src="/assets/logo-redondo.png" alt="">
+        <div class="tag">ESCOLA BÍBLICA DOMINICAL</div>
+        ${ep ? `<div class="numero">${esc(ep)}</div>` : ""}
+        <div class="bloco">
+          <div class="olho">SÉRIE</div>
+          <div class="serie">${esc(serie)}</div>
+          <div class="tema">${esc(tema)}</div>
+          ${ref ? `<div class="ref">${esc(ref)}</div>` : ""}
+        </div>
+        ${pessoa}
+      </div>`;
+  }
+
+  return `<div class="palco capa-ebd"><div class="tema caixa">Layout desconhecido: ${esc(qual)}</div></div>`;
+}
+
+
+/* --------------------------------------------------------------------------
+   Encolhe o texto até caber na caixa. É o que permite um tema curto como
+   "A criação" e um longo como "É impossível fugir de Deus fora de Deus"
+   usarem o mesmo template sem estourar nem sobrar buraco.
+-------------------------------------------------------------------------- */
+function caber(seletor, minimo) {
+  const el = document.querySelector(seletor);
+  if (!el) return;
+  let tam = parseFloat(getComputedStyle(el).fontSize);
+  let voltas = 0;
+  // A folga na altura existe porque line-height abaixo de 1 deixa o scrollHeight
+  // alguns pixels acima do clientHeight mesmo quando o texto cabe. Sem essa
+  // tolerância, o texto encolhia até o mínimo sem motivo. Um quarto do corpo da
+  // fonte absorve esse arredondamento e ainda pega uma linha a mais de verdade,
+  // que custaria mais de uma vez o corpo da fonte.
+  const estourou = () =>
+    el.scrollWidth > el.clientWidth + 1 ||
+    el.scrollHeight > el.clientHeight + Math.ceil(tam * 0.25);
+  while (estourou() && tam > minimo && voltas++ < 60) {
+    tam -= 2;
+    el.style.fontSize = tam + "px";
+  }
+}
+
+function ajustarTextos() {
+  /* o nome da série não tem caixa: limita pela largura livre da capa */
+  const nome = document.querySelector(".capa-culto .serie-nome");
+  if (nome) {
+    let tam = parseFloat(getComputedStyle(nome).fontSize);
+    let voltas = 0;
+    while (nome.scrollWidth > 1920 * 0.52 && tam > 60 && voltas++ < 60) {
+      tam -= 3;
+      nome.style.fontSize = tam + "px";
+    }
+  }
+  caber(".capa-culto .tema", 26);
+  caber(".capa-culto .ref", 24);
+  caber(".tarja-culto .t-tema", 26);
+  caber(".tarja-culto .t-ref", 20);
+  caber(".tarja-culto .t-badge", 24);
+  caberLargura(".etiqueta-serie .nome", 18);
+  caber(".capa-ebd .tema", 28);
+  caber(".capa-ebd .barra-serie .nome", 26);
+  caber(".capa-ebd .capitulo", 20);
+  caber(".capa-ebd .pregador span", 20);
+  caber(".capa-culto .pregador span", 13);
+  caber(".tarja-vertical .v-serie", 26);
+  caber(".tarja-vertical .v-tema", 26);
+  caber(".legenda-short span", 24);
+
+  /* layouts alternativos: a série encolhe pela largura, o tema pela caixa */
+  const alt = document.querySelector(".palco.alt");
+  if (alt) {
+    caber(".alt .serie", 60);
+    caber(".alt .tema", 34);
+    caber(".alt .ref", 22);
+    caber(".alt .pessoa span", 14);
+    caber(".alt .pessoa-grande span", 20);
+    caberLargura(".claro .nome", 18);
+    caberLargura(".claro .barra .esq", 18);
+    caberLargura(".claro .barra .dir", 16);
+    caberLargura(".claro .pill.rotulo", 18);
+    caberLargura(".claro .olho", 16);
+    caber(".claro .faixa span", 18);
+    caberLargura(".claro .aba", 16);
+    caberLargura(".claro .cabeca span", 16);
+    caberLargura(".claro .serie-inline", 16);
+    caberLargura(".alt .pill.serie", 20);
+  }
+}
+
+/* uma linha só: diminui até a largura do texto caber no elemento */
+function caberLargura(seletor, minimo) {
+  const el = document.querySelector(seletor);
+  if (!el) return;
+  let tam = parseFloat(getComputedStyle(el).fontSize);
+  let voltas = 0;
+  while (el.scrollWidth > el.clientWidth + 1 && tam > minimo && voltas++ < 80) {
+    tam -= 3;
+    el.style.fontSize = tam + "px";
+  }
+}
+
+montar();
+</script>
+</body>
+</html>

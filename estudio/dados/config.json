@@ -1,0 +1,487 @@
+{
+  "_comentario": "Estado do Estúdio IPOB. O painel escreve aqui sozinho a cada vídeo publicado (série, episódio). Pode editar à mão sem medo.",
+  "pregadores": {
+    "isaias": {
+      "curto": "Rev. ISAÍAS\nTAVARES",
+      "longo": "Pastor ISAIAS TAVARES",
+      "descricao": "Pastor ISAIAS",
+      "foto": "isaias-posada.png",
+      "recorte": "isaias-posada-recorte.png",
+      "fotos": [
+        {
+          "id": "posada",
+          "nome": "Posada",
+          "foto": "isaias-posada.png",
+          "recorte": "isaias-posada-recorte.png"
+        },
+        {
+          "id": "video",
+          "nome": "Quadro do vídeo",
+          "foto": "isaias-retrato.png",
+          "recorte": "isaias-recorte.png"
+        }
+      ]
+    },
+    "willian": {
+      "curto": "Presb. WILLIAN\nTORRES",
+      "longo": "Presb. WILLIAN TORRES",
+      "descricao": "Presb. WILLIAN",
+      "foto": "willian-posada.png",
+      "recorte": "willian-posada-recorte.png",
+      "fotos": [
+        {
+          "id": "posada",
+          "nome": "Posada",
+          "foto": "willian-posada.png",
+          "recorte": "willian-posada-recorte.png"
+        },
+        {
+          "id": "video",
+          "nome": "Quadro do vídeo",
+          "foto": "willian-retrato.png",
+          "recorte": "willian-recorte.png"
+        }
+      ]
+    },
+    "vittor": {
+      "curto": "Rev. VITTOR\nROCHA",
+      "longo": "Pastor VITTOR ROCHA",
+      "descricao": "Pastor VITTOR",
+      "foto": "vittor-palestra.png",
+      "recorte": "vittor-palestra-recorte.png",
+      "fotos": [
+        {
+          "id": "palestra",
+          "nome": "Palestrando",
+          "foto": "vittor-palestra.png",
+          "recorte": "vittor-palestra-recorte.png"
+        },
+        {
+          "id": "posada",
+          "nome": "Posada (retrato)",
+          "foto": "vittor-posada.png",
+          "recorte": "vittor-posada-recorte.png"
+        },
+        {
+          "id": "video",
+          "nome": "Quadro do vídeo",
+          "foto": "vittor-retrato.png",
+          "recorte": "vittor-recorte.png"
+        }
+      ]
+    }
+  },
+  "formatos": {
+    "culto": {
+      "rotulo": "Culto — domingo à noite",
+      "serie": "JOAO",
+      "proximo_episodio": 3,
+      "palavra_episodio": "AULA",
+      "prefixo_badge": "EP.",
+      "pregadores_na_capa": [
+        "isaias",
+        "willian",
+        "vittor"
+      ],
+      "saudacao": "Boa tarde!",
+      "nome_do_momento": "pregação",
+      "cabecalho_descricao": "MENSAGEM BÍBLICA",
+      "playlist_sem_serie": "MENSAGEM",
+      "pasta": "Culto Noturno"
+    },
+    "ebd": {
+      "rotulo": "EBD — domingo de manhã",
+      "serie": "APOCALIPSE",
+      "proximo_episodio": 5,
+      "palavra_episodio": "EP",
+      "prefixo_badge": "",
+      "pregadores_na_capa": [],
+      "saudacao": "Bom dia!",
+      "nome_do_momento": "EBD",
+      "cabecalho_descricao": "ESCOLA BÍBLICA DOMINICAL",
+      "playlist_sem_serie": "ESCOLA BÍBLICA DOMINICAL - EBD",
+      "pasta": "EBD"
+    }
+  },
+  "modelos": {
+    "verde-biblia": {
+      "nome": "Verde Bíblia",
+      "cor": "#102E16",
+      "destaque": "#FFFB40",
+      "fundo": "biblia.jpg",
+      "tarja_fundo": "#08292E"
+    },
+    "azul-noite": {
+      "nome": "Azul Noite",
+      "cor": "#0E2340",
+      "destaque": "#FFD166",
+      "fundo": "luz.jpg",
+      "tarja_fundo": "#08203A"
+    },
+    "vinho": {
+      "nome": "Vinho",
+      "cor": "#3A1220",
+      "destaque": "#F6C453",
+      "fundo": "vitral.jpg",
+      "tarja_fundo": "#2A0D18"
+    },
+    "terracota": {
+      "nome": "Terracota",
+      "cor": "#5A2A12",
+      "destaque": "#FFE08A",
+      "fundo": "ondas.jpg",
+      "tarja_fundo": "#3C1C0C"
+    },
+    "grafite": {
+      "nome": "Grafite",
+      "cor": "#242424",
+      "destaque": "#4C6287",
+      "fundo": "bruma.jpg",
+      "tarja_fundo": "#111111"
+    },
+    "indigo": {
+      "nome": "Índigo",
+      "cor": "#1E1B45",
+      "destaque": "#FFC857",
+      "fundo": "vitral.jpg",
+      "tarja_fundo": "#14122E"
+    },
+    "oliva": {
+      "nome": "Oliva",
+      "cor": "#28331A",
+      "destaque": "#F2E14C",
+      "fundo": "ondas.jpg",
+      "tarja_fundo": "#1A2211"
+    },
+    "ardosia": {
+      "nome": "Ardósia",
+      "cor": "#16302F",
+      "destaque": "#7FE3C4",
+      "fundo": "bruma.jpg",
+      "tarja_fundo": "#0B211F"
+    }
+  },
+  "layouts": {
+    "_comentario": "Composições da capa. Cada formato tem as suas; 'classico' é o visual das capas já publicadas. A tarja não muda com o layout. Os nomes têm de bater com os de artes/arte.html.",
+    "culto": {
+      "classico": {
+        "nome": "Clássico",
+        "descricao": "O visual das capas publicadas: caixas e foto em diagonal."
+      },
+      "cheia": {
+        "nome": "Foto cheia",
+        "descricao": "Foto ocupa tudo; série e tema grandes embaixo à esquerda."
+      },
+      "painel": {
+        "nome": "Painel",
+        "descricao": "Painel sólido com o texto à esquerda, foto à direita."
+      },
+      "moldura": {
+        "nome": "Moldura",
+        "descricao": "Composição centrada, sóbria, com moldura fina."
+      },
+      "tema": {
+        "nome": "Tema grande",
+        "descricao": "O tema da mensagem é o protagonista — ideal para miniatura."
+      },
+      "branco": {
+        "nome": "Branco e verde",
+        "descricao": "Painel branco com o texto, pregador recortado sobre a cor da série à direita."
+      },
+      "cartao": {
+        "nome": "Cartão",
+        "descricao": "Tudo branco: pregador à esquerda, tema em destaque, barra da série embaixo."
+      },
+      "recorte": {
+        "nome": "Recorte",
+        "descricao": "Degradê da cor da série com o pregador recortado em tamanho grande; tema em três linhas."
+      },
+      "faixa": {
+        "nome": "Faixa lateral",
+        "descricao": "Faixa vertical na cor da série com o nome dela; tema grande no branco."
+      },
+      "dividido": {
+        "nome": "Dividido",
+        "descricao": "Metade cor com o tema, metade branca com série, referência e pregador."
+      },
+      "rodape": {
+        "nome": "Rodapé",
+        "descricao": "Tema enorme no branco; barra grossa embaixo com logo, série e pregador. Sem foto."
+      },
+      "citacao": {
+        "nome": "Citação",
+        "descricao": "Aspas grandes em destaque e o tema em itálico, como uma frase para guardar."
+      },
+      "cartaz": {
+        "nome": "Cartaz",
+        "descricao": "Cor cheia, tema branco em tipografia grande, filete e logo. Pregador pequeno."
+      },
+      "jornal": {
+        "nome": "Editorial",
+        "descricao": "Branco, filetes finos e tema em Candara, como página de revista. Sem foto."
+      },
+      "bloco": {
+        "nome": "Bloco",
+        "descricao": "Um bloco arredondado na cor da série carrega o tema; o resto respira em branco."
+      },
+      "foto-clara": {
+        "nome": "Foto clara",
+        "descricao": "Foto de fundo clareada em tom da série, texto escuro por cima."
+      },
+      "tinta": {
+        "nome": "Tinta suave",
+        "descricao": "Fundo num tom bem claro da cor da série; tema na cor cheia."
+      },
+      "duas-cores": {
+        "nome": "Duas cores",
+        "descricao": "Em cima branco com o tema; embaixo a cor da série com logo e pregador."
+      },
+      "numero": {
+        "nome": "Número",
+        "descricao": "O número do episódio gigante em contorno; tema ao lado. Sem foto."
+      },
+      "moldura-clara": {
+        "nome": "Moldura clara",
+        "descricao": "Branco com moldura fina na cor da série e tudo centrado."
+      },
+      "coluna": {
+        "nome": "Coluna",
+        "descricao": "Coluna estreita com o episódio na vertical; tema no meio; pregador à direita."
+      },
+      "etiqueta": {
+        "nome": "Etiqueta",
+        "descricao": "Aba da série no alto, tema grande com sublinhado em destaque."
+      }
+    },
+    "ebd": {
+      "classico": {
+        "nome": "Clássico",
+        "descricao": "O visual da EBD publicada: fundo claro e barra no alto."
+      },
+      "quadro": {
+        "nome": "Quadro",
+        "descricao": "Bloco sólido com o texto à esquerda; foto grande à direita."
+      },
+      "escuro": {
+        "nome": "Noturno",
+        "descricao": "Versão escura com a foto em duotone e o número da aula grande."
+      },
+      "branco": {
+        "nome": "Branco e verde",
+        "descricao": "Painel branco com o texto, pregador recortado sobre a cor da série à direita."
+      },
+      "cartao": {
+        "nome": "Cartão",
+        "descricao": "Tudo branco: pregador à esquerda, tema em destaque, barra da série embaixo."
+      },
+      "recorte": {
+        "nome": "Recorte",
+        "descricao": "Degradê da cor da série com o pregador recortado em tamanho grande; tema em três linhas."
+      },
+      "faixa": {
+        "nome": "Faixa lateral",
+        "descricao": "Faixa vertical na cor da série com o nome dela; tema grande no branco."
+      },
+      "dividido": {
+        "nome": "Dividido",
+        "descricao": "Metade cor com o tema, metade branca com série, referência e pregador."
+      },
+      "rodape": {
+        "nome": "Rodapé",
+        "descricao": "Tema enorme no branco; barra grossa embaixo com logo, série e pregador. Sem foto."
+      },
+      "citacao": {
+        "nome": "Citação",
+        "descricao": "Aspas grandes em destaque e o tema em itálico, como uma frase para guardar."
+      },
+      "cartaz": {
+        "nome": "Cartaz",
+        "descricao": "Cor cheia, tema branco em tipografia grande, filete e logo. Pregador pequeno."
+      },
+      "jornal": {
+        "nome": "Editorial",
+        "descricao": "Branco, filetes finos e tema em Candara, como página de revista. Sem foto."
+      },
+      "bloco": {
+        "nome": "Bloco",
+        "descricao": "Um bloco arredondado na cor da série carrega o tema; o resto respira em branco."
+      },
+      "foto-clara": {
+        "nome": "Foto clara",
+        "descricao": "Foto de fundo clareada em tom da série, texto escuro por cima."
+      },
+      "tinta": {
+        "nome": "Tinta suave",
+        "descricao": "Fundo num tom bem claro da cor da série; tema na cor cheia."
+      },
+      "duas-cores": {
+        "nome": "Duas cores",
+        "descricao": "Em cima branco com o tema; embaixo a cor da série com logo e pregador."
+      },
+      "numero": {
+        "nome": "Número",
+        "descricao": "O número do episódio gigante em contorno; tema ao lado. Sem foto."
+      },
+      "moldura-clara": {
+        "nome": "Moldura clara",
+        "descricao": "Branco com moldura fina na cor da série e tudo centrado."
+      },
+      "coluna": {
+        "nome": "Coluna",
+        "descricao": "Coluna estreita com o episódio na vertical; tema no meio; pregador à direita."
+      },
+      "etiqueta": {
+        "nome": "Etiqueta",
+        "descricao": "Aba da série no alto, tema grande com sublinhado em destaque."
+      }
+    }
+  },
+  "series_salvas": {
+    "AMÓS": {
+      "formato": "culto",
+      "modelo": "verde-biblia",
+      "cor": "#102E16",
+      "destaque": "#FFFB40",
+      "fundo": "biblia.jpg",
+      "tarja_fundo": "#08292E",
+      "playlist": "AMOS"
+    },
+    "A CONFISSÃO DE FÉ DE WESTMINSTER": {
+      "formato": "ebd",
+      "modelo": "grafite",
+      "cor": "#242424",
+      "destaque": "#4C6287",
+      "fundo": "bruma.jpg",
+      "tarja_fundo": "#000000",
+      "playlist": "A CONFISSÃO DE FÉ DE WESTMINSTER"
+    },
+    "JOÃO": {
+      "formato": "culto",
+      "modelo": "azul-noite",
+      "cor": "#0E2340",
+      "destaque": "#FFD166",
+      "fundo": "luz.jpg",
+      "tarja_fundo": "#08203A",
+      "tarja_altura": "148",
+      "marca": "sim",
+      "playlist": "JOÃO"
+    },
+    "JOAO": {
+      "formato": "culto",
+      "modelo": "azul-noite",
+      "cor": "#0E2340",
+      "destaque": "#FFD166",
+      "fundo": "luz.jpg",
+      "tarja_fundo": "#08203A",
+      "tarja_altura": "148",
+      "marca": "sim",
+      "playlist": "JOAO"
+    },
+    "APOCALIPSE": {
+      "formato": "ebd",
+      "modelo": "terracota",
+      "cor": "#5A2A12",
+      "destaque": "#FFE08A",
+      "fundo": "ondas.jpg",
+      "tarja_fundo": "#3C1C0C",
+      "tarja_altura": "148",
+      "marca": "nao",
+      "playlist": "APOCALIPSE"
+    }
+  },
+  "padroes": {
+    "segundos_de_capa": 5,
+    "fade_da_capa": 0.6,
+    "fade_do_audio": 1.0,
+    "sobra_no_final": 13.0,
+    "qualidade_do_download": "1080",
+    "pasta_dos_editados": "",
+    "_sobre_a_pasta": "Onde ficam os vídeos prontos. Vazio = ~/Movies/Estudio IPOB/Vídeos Editados (fora do Google Drive). Ponha um caminho absoluto para mudar.",
+    "porta_do_painel": 4747,
+    "bitrate_do_video": "3M",
+    "bitrate_do_short": "8M",
+    "modelo_whisper": "small",
+    "_sobre_o_bitrate": "A transmissão do YouTube vem em ~1,5 Mbps. 3 Mbps é o dobro disso: sem perda visível e com arquivo na metade do tamanho para subir. Suba para 5M se algum dia a fonte melhorar.",
+    "normalizar_audio": true,
+    "_sobre_o_audio": "A transmissão chega por volta de -34 LUFS e o YouTube trabalha em -14. Como ele só abaixa som alto e nunca levanta o baixo, sem normalizar o vídeo publicado toca baixo demais. Deixe true.",
+    "limpar_audio": true,
+    "_sobre_a_limpeza": "Antes de normalizar, o som passa por filtro de graves (ronco da mesa), redução de ruído constante e um compressor leve — a fala fica inteligível sem forçar o volume. A transcrição local (Whisper) usa a mesma limpeza. Ponha false se achar que o som ficou artificial.",
+    "recorte_do_short": null,
+    "_sobre_o_recorte": "null = o Estúdio mede o enquadramento em cada trecho (onde está a câmera e por onde o pregador andou). Se o layout da transmissão mudar no meio do trecho, ele não recorta — usa o quadro inteiro, que é sempre seguro. Para forçar um recorte fixo, ponha {x, y, largura, altura} em frações."
+  },
+  "busca_do_corte": {
+    "_comentario": "Frases que marcam o início e o fim da pregação na transcrição. As de cima valem mais. No culto, a pregação começa logo depois do aviso de que as crianças vão descer para a sala — é o marcador mais confiável. O fim é o 'amém' da oração final.",
+    "gatilhos_inicio": [
+      "crianças vão descer",
+      "crianças podem descer",
+      "crianças descerem",
+      "crianças até 10 anos",
+      "crianças para a sala",
+      "descer para a sala",
+      "sala das crianças",
+      "culto infantil",
+      "vamos abrir a palavra",
+      "abramos a palavra",
+      "abra a sua bíblia",
+      "abram as suas bíblias",
+      "abram comigo",
+      "vamos abrir a bíblia",
+      "vamos ler a palavra",
+      "leitura bíblica",
+      "vamos à palavra",
+      "peço que abram",
+      "a nossa leitura de hoje",
+      "o texto de hoje",
+      "o texto que vamos",
+      "nossa mensagem de hoje",
+      "vamos orar antes da palavra",
+      "capítulo"
+    ],
+    "gatilhos_fim": [
+      "amém",
+      "vamos orar",
+      "oremos",
+      "que o senhor abençoe",
+      "deus abençoe",
+      "bênção apostólica",
+      "fiquem de pé"
+    ],
+    "centro": 0.3776,
+    "folga_antes_do_inicio": 6,
+    "folga_apos_o_amem": 3,
+    "parar_antes_da_bencao": false,
+    "_sobre_a_bencao": "false (o que você preferiu) = o vídeo vai até o amém da bênção apostólica, no fim de tudo. true = para antes, no amém da oração que fecha a pregação.",
+    "_sobre_o_corte": "O corte começa no convite para abrir a Bíblia — 'e peço aos irmãos que abram as suas Bíblias' — que vem logo depois do aviso das crianças. folga_do_convite é quanto entra antes dessa frase, em segundos.",
+    "folga_do_convite": 1
+  },
+  "aprendizado": {
+    "_comentario": "Medidas dos cortes conferidos. O painel escreve aqui sozinho a cada vídeo e usa a mediana para melhorar o palpite seguinte.",
+    "cortes": [
+      {
+        "duracao": 6090.0,
+        "fracao_inicio": 0.4141,
+        "sobra_fim": 48.0
+      },
+      {
+        "duracao": 6577.0,
+        "fracao_inicio": 0.3389,
+        "sobra_fim": 8.0
+      },
+      {
+        "duracao": 6518.0,
+        "fracao_inicio": 0.381,
+        "sobra_fim": 13.0
+      },
+      {
+        "duracao": 6907.0,
+        "fracao_inicio": 0.3776,
+        "sobra_fim": 15.0
+      },
+      {
+        "duracao": 5335.0,
+        "fracao_inicio": 0.2433,
+        "sobra_fim": 8.0
+      }
+    ]
+  }
+}
