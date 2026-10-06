@@ -209,6 +209,13 @@ DOMINICAL</span></div>
 
   document.getElementById("alvo").innerHTML = html;
 
+  /* Selo grande do episódio no alto à direita de TODA capa (pedido de
+     06/10/2026): quem olha a miniatura precisa saber de cara que número é. */
+  if (tipo === "capa" && ep) {
+    document.querySelector(".palco").insertAdjacentHTML("beforeend",
+      `<div class="ep-canto"><small>${esc(badge || "EP.")}</small><b>${esc(ep)}</b></div>`);
+  }
+
   /* a prévia do painel usa escala menor; o PNG final usa escala 1 */
   const palco = document.querySelector(".palco");
   if (escala !== 1) {
@@ -629,6 +636,18 @@ function ajustarTextos() {
   caber(".capa-culto .ref", 24);
   caber(".tarja-culto .t-tema", 26);
   caber(".tarja-culto .t-ref", 20);
+  // ainda vazou numa linha só? passa para duas linhas e ajusta de novo
+  const tref = document.querySelector(".tarja-culto .t-ref");
+  if (tref && tref.scrollWidth > tref.clientWidth + 1) {
+    tref.classList.add("duas-linhas");
+    tref.style.fontSize = "";
+    // aqui a altura manda: encolhe até caber inteiro na caixa
+    let tam = parseFloat(getComputedStyle(tref).fontSize), voltas = 0;
+    while ((tref.scrollHeight > tref.clientHeight + 1 || tref.scrollWidth > tref.clientWidth + 1)
+           && tam > 14 && voltas++ < 60) {
+      tam -= 1; tref.style.fontSize = tam + "px";
+    }
+  }
   caber(".tarja-culto .t-badge", 24);
   caberLargura(".etiqueta-serie .nome", 18);
   caber(".capa-ebd .tema", 28);

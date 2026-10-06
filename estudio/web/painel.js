@@ -604,7 +604,7 @@ function mostrarEstudoAtual() {
       } catch (err) { aviso("avisoSerie", esc(err.message), "erro"); b.disabled = false; }
     };
   });
-  $("btTrocarEstudo").onclick = () => { ESTUDO = null; $("serie").readOnly = false;
+  $("btTrocarEstudo").onclick = () => { ESTUDO = null; $("serie").readOnly = false; aviso("avisoEstudo", "");
     mostrar("estudoAtual", false); montarListaEstudos(); mostrar("painelEstudos", true); };
   $("btAjustarVisual").onclick = () => {
     const ab = $("aparenciaCompleta").classList.contains("oculto");
@@ -658,10 +658,12 @@ function mostrarEstudoAtual() {
 
 async function iniciarEstudo() {
   const d = dadosDaArte();
+  const b = $("btIniciarEstudo");
   if (!$("serie").value.trim()) {
     $("nomeEstudo").focus();
-    return aviso("avisoSerie", "Dê um nome ao estudo antes de iniciar.", "erro");
+    return aviso("avisoIniciar", "Dê um nome ao estudo antes de iniciar.", "erro");
   }
+  b.disabled = true; b.textContent = "Gravando…";
   try {
     const r = await pedir("/api/estudos", {
       formato: FORMATO,
@@ -675,9 +677,20 @@ async function iniciarEstudo() {
     await carregarEstudos();
     usarEstudo(r.estudo);
     trocarModoEstudo("existente", true);
-    aviso("avisoSerie", "");
+    aviso("avisoIniciar", "");
+    // o estudo novo aparece como "Estudo existente": avisa o que aconteceu
+    const e = r.estudo;
+    const rotulo = (CFG.formatos[e.formato] || {}).rotulo?.split(" — ")[0] || e.formato;
+    aviso("avisoEstudo",
+      `Estudo <b>${esc(e.serie)}</b> (${esc(rotulo)}) criado com esta aparência. ` +
+      `Este vídeo será o episódio <b>${esc(e.proximo)}</b>; os próximos seguem a sequência. ` +
+      `Para mudar cores ou layout depois, use <b>Ajustar aparência</b>.`, "achado");
+    $("estudoAtual").scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (e) {
-    aviso("avisoSerie", e.message, "erro");
+    aviso("avisoIniciar", e.message, "erro");
+    $("avisoIniciar").scrollIntoView({ behavior: "smooth", block: "center" });
+  } finally {
+    b.disabled = false; b.textContent = "Iniciar estudo com esta aparência";
   }
 }
 

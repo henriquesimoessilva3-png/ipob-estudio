@@ -247,7 +247,7 @@ def api_iniciar_estudo():
         if formato not in cfg["formatos"]:
             return jsonify({"erro": "Formato desconhecido."}), 400
         if _estudo_ativo(cfg, formato):
-            return jsonify({"erro": "Já existe um estudo em andamento neste formato. "
+            return jsonify({"erro": f"Já existe um estudo em andamento neste formato: \"{ativo['serie']}\". "
                                     "Encerre-o antes de iniciar outro."}), 409
         try:
             primeiro = int(d.get("primeiro_episodio") or 1)

@@ -277,6 +277,15 @@ html,body{background:transparent;overflow:hidden;-webkit-font-smoothing:antialia
   border-radius:8px; font-size:var(--tarja-ref-tam); font-weight:700;
 }
 .tarja-culto .t-ref b{color:var(--tarja-ref-texto);margin-left:.35em;font-weight:700}
+/* referência comprida (várias passagens): quebra em duas linhas dentro da
+   caixa, em vez de vazar para fora dela. O JS liga esta classe só quando
+   nem a letra menor resolve numa linha. */
+.tarja-culto .t-ref.duas-linhas{
+  white-space:normal; height:80%; max-width:44%; padding:0 18px;
+  text-align:center; line-height:1.12; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:center;
+}
+.tarja-culto .t-ref.duas-linhas b{margin-left:.35em; display:inline}
 
 /* a marca d'água vale para as duas tarjas */
 .palco .marca{
@@ -1087,3 +1096,23 @@ html,body{background:transparent;overflow:hidden;-webkit-font-smoothing:antialia
 /* séries de cor escura (os verdes do culto): selo e pastilha claros */
 .etiqueta-serie.escura .rotulo{ background:rgba(255,255,255,.92); color:var(--cor-base); }
 .etiqueta-serie.escura .pre{ background:rgba(255,255,255,.86); color:var(--cor-base); }
+
+/* ==========================================================================
+   13. SELO DO EPISÓDIO — alto à direita, em todas as capas
+   ========================================================================== */
+:root{--ep-canto-topo:44px;--ep-canto-direita:64px;--ep-canto-tam:92px}
+.ep-canto{
+  position:absolute; top:var(--ep-canto-topo); right:var(--ep-canto-direita); z-index:5;
+  display:flex; align-items:baseline; gap:14px; padding:8px 30px 12px;
+  background:var(--cor-destaque); color:#1C2420; border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  font-family:var(--fonte-titulo); font-weight:800; line-height:1;
+}
+.ep-canto small{font-size:calc(var(--ep-canto-tam) * .42); letter-spacing:.08em}
+.ep-canto b{font-size:var(--ep-canto-tam); font-weight:800}
+/* onde a logo já ocupa o canto direito, o selo do episódio fica à esquerda dela */
+.alt .ep-canto, .layout-cartao .ep-canto, .layout-citacao .ep-canto,
+.layout-coluna .ep-canto, .layout-etiqueta .ep-canto{ right:260px }
+.capa-ebd .ep-canto{ right:16%; top:1.5%; }
+/* a Foto cheia já tinha o número fantasma: o selo substitui */
+.layout-cheia .ep-grande{display:none}
