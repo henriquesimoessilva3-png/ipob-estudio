@@ -590,7 +590,8 @@ function mostrarEstudoAtual() {
           p.classList.remove("confirmando"); p.querySelector(".pergunta")?.remove();
         });
         pill.classList.add("confirmando");
-        pill.insertAdjacentHTML("afterbegin", `<i class="pergunta">Apagar o episódio ${esc(b.dataset.n)}? Toque no × de novo.</i>`);
+        pill.insertAdjacentHTML("afterbegin", `<i class="pergunta">Apagar o episódio ${esc(b.dataset.n)}? Toque de novo para apagar.</i>`);
+        pill.onclick = ev2 => { if (ev2.target !== b) b.click(); };
         return;
       }
       b.disabled = true;

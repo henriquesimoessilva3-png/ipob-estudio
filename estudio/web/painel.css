@@ -268,7 +268,8 @@ details.ajuda summary{cursor:pointer;font-size:13px;font-weight:600;
 .linha-tempo span{display:inline-flex;align-items:center;gap:6px}
 .linha-tempo .tirar-ep{border:0;background:none;color:#B3412B;font-size:15px;line-height:1;padding:0 2px;cursor:pointer;opacity:.55}
 .linha-tempo .tirar-ep:hover{opacity:1}
-.linha-tempo span.confirmando{border-color:#B3412B;background:#FBE9E5}
+.linha-tempo span.confirmando{border-color:#B3412B;background:#FBE9E5;max-width:none;overflow:visible;cursor:pointer}
+.linha-tempo .tirar-ep{flex:0 0 auto}
 .linha-tempo span.confirmando .tirar-ep{opacity:1;font-weight:700}
 .linha-tempo span.confirmando .rotulo{display:none}
 .linha-tempo .pergunta{font-style:normal;color:#B3412B;font-weight:600}
