@@ -27,7 +27,7 @@ from nucleo.base import (
 # A página confere esta versão com a dela: se o painel.py mudou e o servidor
 # não foi reiniciado, as rotas novas não existem e tudo falha com erro
 # críptico. Com a versão, o painel avisa e oferece reiniciar.
-VERSAO = "2026-10-06.16"
+VERSAO = "2026-10-06.17"
 
 app = Flask(__name__, static_folder=None)
 # sem isso o Flask reordena as chaves em ordem alfabética e a ordem dos

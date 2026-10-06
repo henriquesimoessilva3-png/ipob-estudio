@@ -2,7 +2,7 @@
 
 const $ = id => document.getElementById(id);
 let CFG = null;
-const VERSAO = "2026-10-06.16";   // tem de bater com painel.py
+const VERSAO = "2026-10-06.17";   // tem de bater com painel.py
 let FORMATO = "culto";
 let VIDEO = null;          // {id, titulo, duracao}
 let TAREFA = null;
@@ -49,7 +49,9 @@ async function pedir(rota, corpo) {
   } catch (e) {
     // HTML no lugar de JSON = o servidor é de uma versão anterior à página:
     // o painel.py mudou e o Flask não recarrega sozinho
-    throw new Error(r.status === 404
+    // 405 também: a rota genérica de OPTIONS responde por caminhos que o
+    // servidor antigo ainda não conhece
+    throw new Error(r.status === 404 || r.status === 405
       ? "O servidor está numa versão antiga e não conhece esta função. " +
         "Feche o painel e abra de novo (o painel.py mudou e o Flask não recarrega sozinho)."
       : `O servidor respondeu com erro ${r.status}. Olhe o Terminal do painel.`);
