@@ -2,7 +2,7 @@
 
 const $ = id => document.getElementById(id);
 let CFG = null;
-const VERSAO = "2026-10-02.15";   // tem de bater com painel.py
+const VERSAO = "2026-10-06.16";   // tem de bater com painel.py
 let FORMATO = "culto";
 let VIDEO = null;          // {id, titulo, duracao}
 let TAREFA = null;
@@ -575,10 +575,34 @@ function mostrarEstudoAtual() {
         </div>
       </div>
       <div class="linha-tempo">
-        ${eps.map(x => `<span title="${esc(x.tema || "")}"><b>${esc(x.n)}</b> · ${esc(x.tema || "")}</span>`).join("")}
+        ${eps.map(x => `<span title="${esc(x.tema || "")}" data-n="${esc(x.n)}"><span class="rotulo"><b>${esc(x.n)}</b> · ${esc(x.tema || "")}</span>
+          <button class="tirar-ep" data-n="${esc(x.n)}" title="Tirar este episódio do estudo" aria-label="Tirar do estudo">×</button></span>`).join("")}
         ${e.fim ? "" : `<span class="proximo"><b>${esc(e.proximo)}</b> · este</span>`}
       </div>
     </div>`;
+  // apagar em dois toques: o primeiro pergunta, o segundo apaga
+  $("estudoAtual").querySelectorAll(".tirar-ep").forEach(b => {
+    b.onclick = async ev => {
+      ev.stopPropagation();
+      const pill = b.closest("span");
+      if (!pill.classList.contains("confirmando")) {
+        $("estudoAtual").querySelectorAll(".confirmando").forEach(p => {
+          p.classList.remove("confirmando"); p.querySelector(".pergunta")?.remove();
+        });
+        pill.classList.add("confirmando");
+        pill.insertAdjacentHTML("afterbegin", `<i class="pergunta">Apagar o episódio ${esc(b.dataset.n)}? Toque no × de novo.</i>`);
+        return;
+      }
+      b.disabled = true;
+      try {
+        const r = await pedir(`/api/estudos/${e.id}/episodios/${encodeURIComponent(b.dataset.n)}/remover`, {});
+        await carregarEstudos();
+        ESTUDO = ESTUDOS.find(x => x.id === e.id) || r.estudo;
+        mostrarEstudoAtual();
+        if ($("episodio")) { $("episodio").value = ESTUDO.proximo; }
+      } catch (err) { aviso("avisoSerie", esc(err.message), "erro"); b.disabled = false; }
+    };
+  });
   $("btTrocarEstudo").onclick = () => { ESTUDO = null; $("serie").readOnly = false;
     mostrar("estudoAtual", false); montarListaEstudos(); mostrar("painelEstudos", true); };
   $("btAjustarVisual").onclick = () => {

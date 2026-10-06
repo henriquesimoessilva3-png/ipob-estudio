@@ -27,7 +27,7 @@ from nucleo.base import (
 # A página confere esta versão com a dela: se o painel.py mudou e o servidor
 # não foi reiniciado, as rotas novas não existem e tudo falha com erro
 # críptico. Com a versão, o painel avisa e oferece reiniciar.
-VERSAO = "2026-10-02.15"
+VERSAO = "2026-10-06.16"
 
 app = Flask(__name__, static_folder=None)
 # sem isso o Flask reordena as chaves em ordem alfabética e a ordem dos
@@ -279,6 +279,23 @@ def api_encerrar_estudo(eid):
         if not e:
             return jsonify({"erro": "Estudo não encontrado."}), 404
         e["fim"] = date.today().isoformat()
+        gravar_config(cfg)
+    return jsonify({"estudo": _com_proximo(e)})
+
+
+@app.post("/api/estudos/<eid>/episodios/<n>/remover")
+def api_remover_episodio(eid, n):
+    """Tira o episódio da linha do tempo do estudo. Os arquivos ficam na pasta."""
+    with TRAVA_DA_CONFIG:
+        cfg = ler_config()
+        e = _estudo_por_id(cfg, eid)
+        if not e:
+            return jsonify({"erro": "Estudo não encontrado."}), 404
+        eps = e.get("episodios", [])
+        restantes = [x for x in eps if str(x.get("n")) != str(n)]
+        if len(restantes) == len(eps):
+            return jsonify({"erro": "Episódio não encontrado."}), 404
+        e["episodios"] = restantes
         gravar_config(cfg)
     return jsonify({"estudo": _com_proximo(e)})
 
