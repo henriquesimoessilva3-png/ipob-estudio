@@ -1053,8 +1053,12 @@ def api_reiniciar():
     """
     import os
     import sys
-    if any(TAREFAS.get(t, {}).get("estado") == "rodando" for t in EM_ANDAMENTO.values()):
-        return jsonify({"erro": "Há uma tarefa em andamento. Espere terminar."}), 409
+    d = request.get_json(silent=True) or {}
+    rodando = [t for t in EM_ANDAMENTO.values() if TAREFAS.get(t, {}).get("estado") == "rodando"]
+    if rodando and not d.get("forcar"):
+        etapas = "; ".join(TAREFAS[t].get("etapa", "") for t in rodando)
+        return jsonify({"erro": f"Há uma tarefa em andamento ({etapas}). Espere terminar "
+                                "ou force o reinício.", "ocupado": True}), 409
 
     def trocar():
         import subprocess

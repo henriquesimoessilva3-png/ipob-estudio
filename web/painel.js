@@ -221,10 +221,17 @@ function conferirVersao() {
     (${esc(CFG._versao || "sem versão")} × ${VERSAO}). As funções novas vão falhar até reiniciar.
     <button id="btReiniciar">Reiniciar o painel agora</button>`;
   document.querySelector("header").after(faixa);
-  $("btReiniciar").onclick = async () => {
+  const clicarReiniciar = async (ev, forcar) => {
     $("btReiniciar").disabled = true;
     $("btReiniciar").textContent = "Reiniciando…";
-    try { await pedir("/api/reiniciar", {}); } catch (e) {
+    try { await pedir("/api/reiniciar", { forcar: !!forcar }); } catch (e) {
+      if (!/versão antiga/.test(e.message)) {
+        // o servidor respondeu, mas recusou (tarefa rodando): mostra o motivo
+        faixa.innerHTML = `${esc(e.message)}
+          <button id="btReiniciar">Forçar o reinício agora</button>`;
+        $("btReiniciar").onclick = ev2 => clicarReiniciar(ev2, true);
+        return;
+      }
       // servidor muito antigo (sem esta rota): só resta reiniciar na mão
       faixa.innerHTML = `Este servidor é antigo demais para reiniciar sozinho: feche a
         janela do Terminal do painel (ou Ctrl+C) e abra de novo.`;
@@ -248,6 +255,7 @@ function conferirVersao() {
       }
     }, 1000);
   };
+  $("btReiniciar").onclick = ev => clicarReiniciar(ev, false);
 }
 
 /* ------------------------------------------------------------- aparência */
