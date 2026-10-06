@@ -215,6 +215,12 @@ details.ajuda summary{cursor:pointer;font-size:13px;font-weight:600;
   background:#fff;border-radius:8px;font:inherit;font-size:13px;font-weight:600;
   color:var(--verde);cursor:pointer}
 .producao button:hover{border-color:var(--verde);background:#F4F8F4}
+.producao .apagar-prod{padding:4px 10px;border-color:transparent;color:#B3412B;font-size:18px;line-height:1;opacity:.55}
+.producao .apagar-prod:hover{opacity:1;border-color:#B3412B;background:#FBE9E5}
+.producao.confirmando{border-color:#B3412B;background:#FBE9E5}
+.producao.confirmando .apagar-prod{opacity:1;border-color:#B3412B;font-weight:700}
+.producao.confirmando .selos{flex-wrap:wrap}
+.producao .pergunta{font-size:12px;color:#B3412B;font-weight:600}
 
 /* ------------------------------------------------- onde os arquivos estão */
 .onde{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;

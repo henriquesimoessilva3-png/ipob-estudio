@@ -1095,6 +1095,37 @@ def api_apagar_videos():
     return jsonify({"ok": True, "apagados": apagados, "mb": round(mb)})
 
 
+@app.post("/api/apagar-producao")
+def api_apagar_producao():
+    """Apaga a pasta inteira de uma produção (vídeo, Shorts, capa, ficha) e
+    tira o episódio da linha do tempo do estudo. O painel confirma antes."""
+    import shutil
+    d = request.get_json(force=True)
+    pasta = Path(d.get("pasta", ""))
+    if not pasta.is_dir() or not (SAIDA in pasta.parents
+                                  or (SAIDA_ANTIGA.exists() and SAIDA_ANTIGA in pasta.parents)):
+        return jsonify({"erro": "Essa pasta não é de uma produção do Estúdio."}), 400
+    shutil.rmtree(pasta)
+    # pasta do estudo vazia some junto, para não deixar casca na biblioteca
+    try:
+        if pasta.parent != SAIDA and not any(pasta.parent.iterdir()):
+            pasta.parent.rmdir()
+    except OSError:
+        pass
+    with TRAVA_DA_CONFIG:
+        cfg = ler_config()
+        mexeu = False
+        for e in _estudos(cfg):
+            eps = e.get("episodios", [])
+            novos = [x for x in eps if x.get("pasta") != str(pasta)]
+            if len(novos) != len(eps):
+                e["episodios"] = novos
+                mexeu = True
+        if mexeu:
+            gravar_config(cfg)
+    return jsonify({"ok": True})
+
+
 @app.post("/api/abrir-pasta")
 def api_abrir_pasta():
     """Abre no Finder. Com `revelar`, seleciona o arquivo dentro da pasta."""

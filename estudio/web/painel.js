@@ -1307,10 +1307,32 @@ async function montarBiblioteca() {
         </div>
         <div class="selos">${selos}</div>
         <button data-i="${i}">Abrir</button>
+        <button class="apagar-prod" data-apagar="${i}" title="Apagar esta produção" aria-label="Apagar">×</button>
       </div>`;
   }).join("");
 
-  alvo.onclick = e => {
+  alvo.onclick = async e => {
+    const x = e.target.closest("button[data-apagar]");
+    if (x) {
+      // dois toques: o primeiro pergunta, o segundo apaga a pasta inteira
+      const card = x.closest(".producao");
+      if (!card.classList.contains("confirmando")) {
+        alvo.querySelectorAll(".producao.confirmando").forEach(c => {
+          c.classList.remove("confirmando"); c.querySelector(".pergunta")?.remove();
+        });
+        card.classList.add("confirmando");
+        card.querySelector(".selos").insertAdjacentHTML("beforeend",
+          `<span class="pergunta">Apagar o vídeo e os Shorts do disco? Toque no × de novo.</span>`);
+        return;
+      }
+      x.disabled = true;
+      try {
+        await pedir("/api/apagar-producao", { pasta: producoes[x.dataset.apagar].pasta });
+        if (ESTUDO) { await carregarEstudos(); ESTUDO = ESTUDOS.find(s => s.id === ESTUDO.id) || ESTUDO; mostrarEstudoAtual(); }
+        montarBiblioteca();
+      } catch (err) { alert(err.message); x.disabled = false; }
+      return;
+    }
     const b = e.target.closest("button[data-i]");
     if (b) abrirProducao(producoes[b.dataset.i], b);
   };
