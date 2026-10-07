@@ -299,3 +299,17 @@ details.ajuda summary{cursor:pointer;font-size:13px;font-weight:600;
 .faixa-conexao button{padding:7px 14px;border-radius:7px;border:0;background:#7FE3C4;color:#16302F;font:600 14px inherit;cursor:pointer}
 .faixa-conexao .ok{color:#7FE3C4}.faixa-conexao .falha{color:#FFD28A}
 body.desconectado .pagina,body.desconectado main{opacity:.35;pointer-events:none}
+
+/* detalhe de um episódio do estudo */
+.detalhe-episodio{margin-top:12px;padding:14px;border:1px solid var(--linha);border-radius:10px;background:#fff}
+.detalhe-episodio .cabeca{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.detalhe-episodio .cabeca b{font-size:14px}
+.detalhe-episodio .acoes{display:flex;gap:6px;flex-wrap:wrap}
+.detalhe-episodio .acoes button{padding:6px 12px;border:1px solid var(--linha);border-radius:8px;background:#fff;font:600 13px inherit;cursor:pointer}
+.detalhe-episodio .corpo{display:flex;gap:16px;margin-top:12px;align-items:flex-start;flex-wrap:wrap}
+.detalhe-episodio .capa-ep{width:240px;max-width:100%;border-radius:8px;border:1px solid var(--linha)}
+.detalhe-episodio .itens{flex:1 1 280px;min-width:0;display:grid;grid-template-columns:1fr;gap:6px;font-size:13px}
+.detalhe-episodio .itens div{display:flex;gap:10px;min-width:0}
+.detalhe-episodio .itens span{flex:0 0 84px;color:var(--suave);font-weight:600}
+.detalhe-episodio .itens code{font-size:11.5px;word-break:break-all}
+.detalhe-episodio a{color:var(--verde)}

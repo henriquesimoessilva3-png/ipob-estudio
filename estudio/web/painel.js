@@ -2,7 +2,7 @@
 
 const $ = id => document.getElementById(id);
 let CFG = null;
-const VERSAO = "2026-10-06.17";   // tem de bater com painel.py
+const VERSAO = "2026-10-06.18";   // tem de bater com painel.py
 let FORMATO = "culto";
 let VIDEO = null;          // {id, titulo, duracao}
 let TAREFA = null;
@@ -585,11 +585,17 @@ function mostrarEstudoAtual() {
         </div>
       </div>
       <div class="linha-tempo">
-        ${eps.map(x => `<span title="${esc(x.tema || "")}" data-n="${esc(x.n)}"><span class="rotulo"><b>${esc(x.n)}</b> · ${esc(x.tema || "")}</span>
+        ${eps.map(x => `<span title="${esc(x.tema || "")}" data-n="${esc(x.n)}" data-pasta="${esc(x.pasta || "")}" class="episodio"><span class="rotulo"><b>${esc(x.n)}</b> · ${esc(x.tema || "")}</span>
           <button class="tirar-ep" data-n="${esc(x.n)}" title="Tirar este episódio do estudo" aria-label="Tirar do estudo">×</button></span>`).join("")}
         ${e.fim ? "" : `<span class="proximo"><b>${esc(e.proximo)}</b> · este</span>`}
       </div>
+      <div id="detalheEpisodio" class="detalhe-episodio oculto"></div>
     </div>`;
+  // clicar num episódio abre o que já foi produzido para ele
+  $("estudoAtual").querySelectorAll(".linha-tempo span.episodio .rotulo").forEach(r => {
+    r.style.cursor = "pointer";
+    r.onclick = () => { const sp = r.closest("span.episodio"); mostrarEpisodio(sp.dataset.pasta, eps.find(x => String(x.n) === sp.dataset.n)); };
+  });
   // apagar em dois toques: o primeiro pergunta, o segundo apaga
   $("estudoAtual").querySelectorAll(".tirar-ep").forEach(b => {
     b.onclick = async ev => {
@@ -702,6 +708,58 @@ async function iniciarEstudo() {
   } finally {
     b.disabled = false; b.textContent = "Iniciar estudo com esta aparência";
   }
+}
+
+/* ------------------------------------------------ detalhe de um episódio */
+async function mostrarEpisodio(pasta, ep) {
+  const caixa = $("detalheEpisodio");
+  if (!caixa) return;
+  if (caixa.dataset.pasta === pasta && !caixa.classList.contains("oculto")) {
+    mostrar("detalheEpisodio", false); return;
+  }
+  caixa.dataset.pasta = pasta;
+  caixa.innerHTML = `<p class="dica">Procurando o que já existe deste episódio…</p>`;
+  mostrar("detalheEpisodio", true);
+  let d;
+  try {
+    d = await pedir("/api/episodio?pasta=" + encodeURIComponent(pasta));
+  } catch (e) {
+    caixa.innerHTML = `
+      <div class="cabeca"><b>${esc(ep?.n)} · ${esc(ep?.tema || "")}</b>
+        <button id="btFecharEp">Fechar</button></div>
+      <p class="dica">${esc(e.message)} Nada produzido ainda para este episódio.</p>`;
+    $("btFecharEp").onclick = () => mostrar("detalheEpisodio", false);
+    return;
+  }
+  const f = d.ficha || {};
+  const q = encodeURIComponent(pasta);
+  const seg = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  caixa.innerHTML = `
+    <div class="cabeca">
+      <b>${esc(ep?.n || f.episodio)} · ${esc(f.tema || ep?.tema || "")}</b>
+      <div class="acoes">
+        <button id="btPastaEp">Abrir pasta</button>
+        <button id="btRetomarEp">Retomar no painel</button>
+        <button id="btFecharEp">Fechar</button>
+      </div>
+    </div>
+    <div class="corpo">
+      ${d.capa ? `<img class="capa-ep" src="${caminho("/api/arquivo")}?pasta=${q}&nome=capa.jpg" alt="">` : ""}
+      <div class="itens">
+        <div><span>Data</span>${esc(f.data || ep?.data || "—")}</div>
+        <div><span>Referência</span>${esc(f.referencia || ep?.referencia || "—")}</div>
+        <div><span>Pregador</span>${esc(((CFG.pregadores || {})[f.pregador] || {}).curto?.replace(/\n/g, " ") || f.pregador || "—")}</div>
+        <div><span>Corte</span>${f.inicio ? `${esc(f.inicio)} → ${esc(f.fim || "")}` : "—"}</div>
+        <div><span>Vídeo</span>${d.video ? `${esc(d.video.nome)} · ${d.video.mb} MB` : "ainda não produzido"}</div>
+        <div><span>Shorts</span>${d.shorts.length ? d.shorts.map(s => `${esc(s.nome)} (${seg(s.segundos)})`).join(", ") : "nenhum"}</div>
+        <div><span>Legenda</span>${d.legenda ? "legenda.srt" : "—"}</div>
+        <div><span>YouTube</span>${f.youtube ? `<a href="${esc(f.youtube)}" target="_blank" rel="noopener">${esc(f.youtube)}</a>` : "ainda não subiu"}</div>
+        <div><span>Pasta</span><code>${esc(pasta)}</code></div>
+      </div>
+    </div>`;
+  $("btFecharEp").onclick = () => mostrar("detalheEpisodio", false);
+  $("btPastaEp").onclick = () => pedir("/api/abrir-pasta", { caminho: pasta });
+  $("btRetomarEp").onclick = ev => abrirProducao({ pasta, url: f.url, arquivo: d.video ? pasta + "/" + d.video.nome : "" }, ev.target);
 }
 
 /* ------------------------------------------------------------ gravar corte */

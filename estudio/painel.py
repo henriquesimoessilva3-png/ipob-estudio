@@ -27,7 +27,7 @@ from nucleo.base import (
 # A página confere esta versão com a dela: se o painel.py mudou e o servidor
 # não foi reiniciado, as rotas novas não existem e tudo falha com erro
 # críptico. Com a versão, o painel avisa e oferece reiniciar.
-VERSAO = "2026-10-06.17"
+VERSAO = "2026-10-06.18"
 
 app = Flask(__name__, static_folder=None)
 # sem isso o Flask reordena as chaves em ordem alfabética e a ordem dos
@@ -1097,6 +1097,50 @@ def api_apagar_videos():
         arq.unlink()
         apagados.append(arq.name)
     return jsonify({"ok": True, "apagados": apagados, "mb": round(mb)})
+
+
+def _pasta_de_producao_valida(caminho: str) -> Path | None:
+    pasta = Path(caminho or "")
+    if pasta.is_dir() and (SAIDA in pasta.parents
+                           or (SAIDA_ANTIGA.exists() and SAIDA_ANTIGA in pasta.parents)):
+        return pasta
+    return None
+
+
+@app.get("/api/episodio")
+def api_episodio():
+    """Tudo o que já existe de um episódio: ficha, vídeo, Shorts, capa, legenda."""
+    pasta = _pasta_de_producao_valida(request.args.get("pasta", ""))
+    if not pasta:
+        return jsonify({"erro": "Essa pasta não existe mais (o episódio foi apagado ou movido)."}), 404
+    ficha = {}
+    f = pasta / biblioteca.FICHA
+    if f.exists():
+        try:
+            ficha = json.loads(f.read_text(encoding="utf-8"))
+        except ValueError:
+            ficha = {}
+    videos = sorted(p for p in pasta.glob("*.mp4") if not p.name.startswith("short-"))
+    return jsonify({
+        "pasta": str(pasta), "ficha": ficha,
+        "video": ({"nome": videos[0].name, "mb": round(videos[0].stat().st_size / 1_048_576)}
+                  if videos else None),
+        "shorts": biblioteca.shorts_de(pasta),
+        "capa": (pasta / "capa.jpg").exists(),
+        "legenda": (pasta / "legenda.srt").exists(),
+        "texto": (pasta / "titulo e descricao.txt").read_text(encoding="utf-8")
+                 if (pasta / "titulo e descricao.txt").exists() else "",
+    })
+
+
+@app.get("/api/arquivo")
+def api_arquivo():
+    """Serve um arquivo pequeno de uma produção (a capa, por exemplo)."""
+    pasta = _pasta_de_producao_valida(request.args.get("pasta", ""))
+    nome = Path(request.args.get("nome", "")).name
+    if not pasta or nome not in ("capa.jpg", "capa.png", "legenda.srt"):
+        return jsonify({"erro": "Arquivo não disponível."}), 404
+    return send_from_directory(pasta, nome)
 
 
 @app.post("/api/apagar-producao")
