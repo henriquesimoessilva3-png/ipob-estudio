@@ -381,7 +381,7 @@ html,body{background:transparent;overflow:hidden;-webkit-font-smoothing:antialia
   background:var(--ebd-tarja-fundo);
   display:flex; align-items:center; padding:0 2%;
 }
-.tarja-ebd .esquerda{flex:1 1 auto}
+.tarja-ebd .esquerda{flex:1 1 auto; min-width:0}
 .tarja-ebd .e-serie{
   color:var(--ebd-tarja-serie); font-weight:800;
   font-size:var(--ebd-tarja-serie-tam); line-height:1.15;
@@ -389,6 +389,8 @@ html,body{background:transparent;overflow:hidden;-webkit-font-smoothing:antialia
 .tarja-ebd .e-tema{
   margin-top:8px; color:var(--ebd-tarja-tema);
   font-weight:700; font-style:italic; font-size:var(--ebd-tarja-tema-tam);
+  /* uma linha só (06/10/2026): tema comprido diminui a letra em vez de quebrar */
+  white-space:nowrap; overflow:hidden;
 }
 .tarja-ebd .pastor{
   /* a margem abre espaço para as listras, que agora vão até a borda */
