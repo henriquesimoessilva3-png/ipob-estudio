@@ -313,3 +313,5 @@ body.desconectado .pagina,body.desconectado main{opacity:.35;pointer-events:none
 .detalhe-episodio .itens span{flex:0 0 84px;color:var(--suave);font-weight:600}
 .detalhe-episodio .itens code{font-size:11.5px;word-break:break-all}
 .detalhe-episodio a{color:var(--verde)}
+.linha-tempo span.proximo{cursor:pointer}
+.linha-tempo .lapis{font-style:normal;opacity:.5;font-size:11px}

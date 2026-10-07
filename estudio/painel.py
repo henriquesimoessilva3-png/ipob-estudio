@@ -27,7 +27,7 @@ from nucleo.base import (
 # A página confere esta versão com a dela: se o painel.py mudou e o servidor
 # não foi reiniciado, as rotas novas não existem e tudo falha com erro
 # críptico. Com a versão, o painel avisa e oferece reiniciar.
-VERSAO = "2026-10-06.18"
+VERSAO = "2026-10-06.19"
 
 app = Flask(__name__, static_folder=None)
 # sem isso o Flask reordena as chaves em ordem alfabética e a ordem dos
@@ -211,12 +211,18 @@ def _estudo_por_id(cfg: dict, eid: str) -> dict | None:
 
 
 def _proximo_episodio(estudo: dict) -> int:
+    try:
+        forcado = int(estudo.get("proximo_forcado"))
+    except (TypeError, ValueError):
+        forcado = None
     numeros = []
     for ep in estudo.get("episodios", []):
         try:
             numeros.append(int(ep.get("n")))
         except (TypeError, ValueError):
             pass
+    if forcado is not None and forcado not in numeros and forcado > max(numeros, default=0):
+        return forcado
     if numeros:
         return max(numeros) + 1
     try:
@@ -296,6 +302,30 @@ def api_remover_episodio(eid, n):
         if len(restantes) == len(eps):
             return jsonify({"erro": "Episódio não encontrado."}), 404
         e["episodios"] = restantes
+        gravar_config(cfg)
+    return jsonify({"estudo": _com_proximo(e)})
+
+
+@app.post("/api/estudos/<eid>/proximo")
+def api_proximo_episodio(eid):
+    """Define o número do próximo episódio (o "este" da linha do tempo)."""
+    d = request.get_json(force=True) or {}
+    try:
+        n = int(d.get("n"))
+    except (TypeError, ValueError):
+        return jsonify({"erro": "Número inválido."}), 400
+    with TRAVA_DA_CONFIG:
+        cfg = ler_config()
+        e = _estudo_por_id(cfg, eid)
+        if not e:
+            return jsonify({"erro": "Estudo não encontrado."}), 404
+        usados = {str(x.get("n")) for x in e.get("episodios", [])}
+        if str(n) in usados:
+            return jsonify({"erro": f"O episódio {n} já existe neste estudo."}), 409
+        # o próximo é max(episódios)+1 ou o primeiro_episodio: para forçar um
+        # número, guardamos o pedido e ele vale enquanto for maior que os usados
+        e["primeiro_episodio"] = n
+        e["proximo_forcado"] = n
         gravar_config(cfg)
     return jsonify({"estudo": _com_proximo(e)})
 

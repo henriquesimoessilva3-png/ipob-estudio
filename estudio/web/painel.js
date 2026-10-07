@@ -2,7 +2,7 @@
 
 const $ = id => document.getElementById(id);
 let CFG = null;
-const VERSAO = "2026-10-06.18";   // tem de bater com painel.py
+const VERSAO = "2026-10-06.19";   // tem de bater com painel.py
 let FORMATO = "culto";
 let VIDEO = null;          // {id, titulo, duracao}
 let TAREFA = null;
@@ -587,10 +587,30 @@ function mostrarEstudoAtual() {
       <div class="linha-tempo">
         ${eps.map(x => `<span title="${esc(x.tema || "")}" data-n="${esc(x.n)}" data-pasta="${esc(x.pasta || "")}" class="episodio"><span class="rotulo"><b>${esc(x.n)}</b> · ${esc(x.tema || "")}</span>
           <button class="tirar-ep" data-n="${esc(x.n)}" title="Tirar este episódio do estudo" aria-label="Tirar do estudo">×</button></span>`).join("")}
-        ${e.fim ? "" : `<span class="proximo"><b>${esc(e.proximo)}</b> · este</span>`}
+        ${e.fim ? "" : `<span class="proximo" title="Clique para mudar o número deste episódio"><b>${esc(e.proximo)}</b> · este <i class="lapis">✎</i></span>`}
       </div>
       <div id="detalheEpisodio" class="detalhe-episodio oculto"></div>
     </div>`;
+  // o número do próximo episódio pode ser trocado na hora
+  const prox = $("estudoAtual").querySelector(".linha-tempo .proximo");
+  if (prox) prox.onclick = () => {
+    if (prox.querySelector("input")) return;
+    prox.innerHTML = `<input type="number" min="1" value="${esc(e.proximo)}" style="width:64px;font:inherit;padding:2px 6px;border:1px solid var(--linha);border-radius:6px"> · este`;
+    const inp = prox.querySelector("input"); inp.focus(); inp.select();
+    const gravar = async () => {
+      const n = parseInt(inp.value, 10);
+      if (!n || n === e.proximo) { mostrarEstudoAtual(); return; }
+      try {
+        const r = await pedir(`/api/estudos/${e.id}/proximo`, { n });
+        await carregarEstudos();
+        ESTUDO = ESTUDOS.find(x => x.id === e.id) || r.estudo;
+        $("episodio").value = ESTUDO.proximo;
+        mostrarEstudoAtual();
+      } catch (err) { aviso("avisoSerie", esc(err.message), "erro"); mostrarEstudoAtual(); }
+    };
+    inp.onkeydown = ev => { if (ev.key === "Enter") gravar(); if (ev.key === "Escape") mostrarEstudoAtual(); };
+    inp.onblur = gravar;
+  };
   // clicar num episódio abre o que já foi produzido para ele
   $("estudoAtual").querySelectorAll(".linha-tempo span.episodio .rotulo").forEach(r => {
     r.style.cursor = "pointer";
