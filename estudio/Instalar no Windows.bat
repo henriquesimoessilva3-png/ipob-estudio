@@ -1,40 +1,67 @@
 @echo off
 chcp 65001 >nul
-title Estúdio IPOB — instalação
+title Estúdio IPOB - instalação
 cd /d "%~dp0"
+set "PASTA=%~dp0"
+set "PATH=%LOCALAPPDATA%\Microsoft\WinGet\Links;%LOCALAPPDATA%\Programs\Python\Python312;%LOCALAPPDATA%\Programs\Python\Python312\Scripts;%PATH%"
 echo.
-echo   Estúdio IPOB — instalação
+echo   Estúdio IPOB - instalação
 echo   =========================
+echo.
 
-where winget >nul 2>&1 || (echo   Este Windows nao tem o winget. Atualize o Windows ^(App Installer na Microsoft Store^) e rode de novo. & pause & exit /b 1)
-
-where python >nul 2>&1 || (
-  echo   Instalando o Python...
-  winget install -e --id Python.Python.3.12 --accept-package-agreements --accept-source-agreements --silent
-  echo   Python instalado. FECHE esta janela e rode o instalador de novo para ele ser reconhecido.
-  pause & exit /b 0
+where winget >nul 2>&1 || (
+  echo   Este Windows não tem o winget. Abra a Microsoft Store, procure "Instalador de Aplicativo",
+  echo   atualize e rode este instalador de novo.
+  pause & exit /b 1
 )
 
-where ffmpeg >nul 2>&1 || (
-  echo   Instalando o ffmpeg...
+rem "python" pode ser só o atalho da Microsoft Store, que não funciona: testa de verdade
+python -c "import sys; sys.exit(0 if sys.version_info>=(3,10) else 1)" >nul 2>&1
+if errorlevel 1 (
+  echo   [1/4] Instalando o Python...
+  winget install -e --id Python.Python.3.12 --scope user --accept-package-agreements --accept-source-agreements --silent
+  python -c "import sys" >nul 2>&1 || (
+    echo.
+    echo   Python instalado. FECHE esta janela e dê dois cliques de novo em "Instalar no Windows".
+    pause & exit /b 0
+  )
+) else (
+  echo   [1/4] Python já instalado.
+)
+
+where ffmpeg >nul 2>&1
+if errorlevel 1 (
+  echo   [2/4] Instalando o ffmpeg...
   winget install -e --id Gyan.FFmpeg --accept-package-agreements --accept-source-agreements --silent
+) else (
+  echo   [2/4] ffmpeg já instalado.
 )
 
-echo   Instalando as bibliotecas Python...
-python -m pip install --upgrade pip >nul
-python -m pip install -r requirements.txt
+echo   [3/4] Instalando as bibliotecas (pode levar alguns minutos)...
+python -m pip install --upgrade pip --quiet
+python -m pip install -r requirements.txt --quiet
+if errorlevel 1 (
+  echo   Algo falhou nas bibliotecas. Tire um print desta janela e mande para o Henrique.
+  pause & exit /b 1
+)
 
-if not exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" if not exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" (
+if not exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" if not exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" if not exist "%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe" (
   echo   Baixando o navegador usado para gerar capa e tarja...
   python -m playwright install chromium
 )
 
-echo   Criando o atalho na Area de Trabalho...
-copy /y "Abrir Estúdio IPOB.bat" "%USERPROFILE%\Desktop\Abrir Estúdio IPOB.bat" >nul
+echo   [4/4] Criando o atalho na Área de Trabalho...
+set "ATALHO=%USERPROFILE%\Desktop\Abrir Estúdio IPOB.bat"
+if exist "%USERPROFILE%\OneDrive\Desktop" set "ATALHO=%USERPROFILE%\OneDrive\Desktop\Abrir Estúdio IPOB.bat"
+if exist "%USERPROFILE%\OneDrive\Área de Trabalho" set "ATALHO=%USERPROFILE%\OneDrive\Área de Trabalho\Abrir Estúdio IPOB.bat"
+(
+  echo @echo off
+  echo call "%PASTA%Abrir Estúdio IPOB.bat"
+) > "%ATALHO%"
 
 echo.
-echo   Pronto. Para usar, de dois cliques em "Abrir Estúdio IPOB" na Area de Trabalho.
-echo   (Os videos ficam em Videos\Estudio IPOB.)
-echo   Se o ffmpeg nao for reconhecido na primeira vez, feche e abra o atalho de novo.
+echo   Pronto! Para usar, dê dois cliques em "Abrir Estúdio IPOB" na Área de Trabalho.
+echo   Os vídeos prontos ficam em Vídeos\Estudio IPOB\Vídeos Editados.
+echo.
 pause
-call "Abrir Estúdio IPOB.bat"
+call "%PASTA%Abrir Estúdio IPOB.bat"

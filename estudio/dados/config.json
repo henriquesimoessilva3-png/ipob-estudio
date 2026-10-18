@@ -74,7 +74,7 @@
   "formatos": {
     "culto": {
       "rotulo": "Culto — domingo à noite",
-      "serie": "JOAO",
+      "serie": "APOCALIPSE",
       "proximo_episodio": 3,
       "palavra_episodio": "AULA",
       "prefixo_badge": "EP.",
@@ -87,12 +87,14 @@
       "nome_do_momento": "pregação",
       "cabecalho_descricao": "MENSAGEM BÍBLICA",
       "playlist_sem_serie": "MENSAGEM",
-      "pasta": "Culto Noturno"
+      "pasta": "Culto Noturno",
+      "centro_aprendido": 0.2038,
+      "sobra_aprendida": 14.0
     },
     "ebd": {
       "rotulo": "EBD — domingo de manhã",
       "serie": "APOCALIPSE",
-      "proximo_episodio": 5,
+      "proximo_episodio": 6,
       "palavra_episodio": "EP",
       "prefixo_badge": "",
       "pregadores_na_capa": [],
@@ -100,6 +102,8 @@
       "nome_do_momento": "EBD",
       "cabecalho_descricao": "ESCOLA BÍBLICA DOMINICAL",
       "playlist_sem_serie": "ESCOLA BÍBLICA DOMINICAL - EBD",
+      "centro_aprendido": 0.2779,
+      "sobra_aprendida": 9.0,
       "pasta": "EBD"
     }
   },
@@ -378,14 +382,15 @@
       "playlist": "JOAO"
     },
     "APOCALIPSE": {
-      "formato": "ebd",
-      "modelo": "terracota",
-      "cor": "#5A2A12",
-      "destaque": "#FFE08A",
-      "fundo": "ondas.jpg",
-      "tarja_fundo": "#3C1C0C",
-      "tarja_altura": "148",
+      "formato": "culto",
+      "modelo": "azul-noite",
+      "cor": "#0E2340",
+      "destaque": "#FFD166",
+      "fundo": "luz.jpg",
+      "tarja_fundo": "#08203A",
+      "tarja_altura": "126",
       "marca": "nao",
+      "layout": "moldura",
       "playlist": "APOCALIPSE"
     }
   },
@@ -481,7 +486,105 @@
         "duracao": 5335.0,
         "fracao_inicio": 0.2433,
         "sobra_fim": 8.0
+      },
+      {
+        "formato": "ebd",
+        "video_id": "SUZR02xfgEs",
+        "duracao": 6843.0,
+        "fracao_inicio": 0.2904,
+        "sobra_fim": 1.0
+      },
+      {
+        "formato": "culto",
+        "video_id": "LZi1RTgtCIg",
+        "duracao": 6151.0,
+        "fracao_inicio": 0.1725,
+        "sobra_fim": 13.0
+      },
+      {
+        "formato": "ebd",
+        "video_id": "yX8Yuxslo9w",
+        "duracao": 6160.0,
+        "fracao_inicio": 0.2779,
+        "sobra_fim": 9.0
+      },
+      {
+        "formato": "culto",
+        "video_id": "SlIln-wypZA",
+        "duracao": 5887.0,
+        "fracao_inicio": 0.2351,
+        "sobra_fim": 15.0
+      },
+      {
+        "formato": "culto",
+        "video_id": "gMBgRdC1MgU",
+        "duracao": 6294.0,
+        "fracao_inicio": 0.1363,
+        "sobra_fim": 18.0
+      },
+      {
+        "formato": "culto",
+        "video_id": "PTxg5s_i1WM",
+        "duracao": 6577.0,
+        "fracao_inicio": 0.3389,
+        "sobra_fim": 8.0
+      },
+      {
+        "formato": "ebd",
+        "video_id": "SlIln-wypZA",
+        "duracao": 5887.0,
+        "fracao_inicio": 0.2351,
+        "sobra_fim": 15.0
       }
     ]
-  }
+  },
+  "estudos": [
+    {
+      "id": "93d6a836",
+      "formato": "ebd",
+      "serie": "APOCALIPSE",
+      "playlist": "APOCALIPSE",
+      "pregador": "isaias",
+      "pregadores_na_capa": [],
+      "visual": {
+        "nome": "Verde Bíblia",
+        "cor": "#16302F",
+        "destaque": "#7FE3C4",
+        "fundo": "bruma.jpg",
+        "tarja_fundo": "#0B211F",
+        "modelo": "ardosia",
+        "tarja_altura": "148",
+        "marca": "sim",
+        "layout": "escuro"
+      },
+      "primeiro_episodio": 5,
+      "inicio": "2026-10-01",
+      "fim": null,
+      "episodios": []
+    },
+    {
+      "id": "4842a5e8",
+      "formato": "culto",
+      "serie": "APOCALIPSE",
+      "playlist": "APOCALIPSE",
+      "pregador": "vittor",
+      "pregadores_na_capa": [
+        "vittor"
+      ],
+      "visual": {
+        "modelo": "azul-noite",
+        "cor": "#0E2340",
+        "destaque": "#FFD166",
+        "fundo": "luz.jpg",
+        "tarja_fundo": "#08203A",
+        "tarja_altura": "126",
+        "marca": "nao",
+        "layout": "moldura"
+      },
+      "primeiro_episodio": 1,
+      "inicio": "2026-10-01",
+      "fim": null,
+      "episodios": []
+    }
+  ]
 }
