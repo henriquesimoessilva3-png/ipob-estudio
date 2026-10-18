@@ -22,7 +22,7 @@ if errorlevel 1 (
   winget install -e --id Python.Python.3.12 --scope user --accept-package-agreements --accept-source-agreements --silent
   python -c "import sys" >nul 2>&1 || (
     echo.
-    echo   Python instalado. FECHE esta janela e dê dois cliques de novo em "Instalar no Windows".
+    echo   Python instalado. FECHE esta janela e abra de novo o instalador "Instalar Estudio IPOB" (em Downloads).
     pause & exit /b 0
   )
 ) else (
